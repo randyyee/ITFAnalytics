@@ -4,21 +4,12 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
-```
-
 # ITFAnalytics
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of ITFAnalytics is to ...
+The goal of ITFAnalytics is to collect the functions need to access and prepare various COVID data sources.
 
 ## Installation
 
@@ -27,3 +18,5 @@ You can install the released version of ITFAnalytics from [Github](https://githu
 ``` r
 devtools::install_github("randyyee/ITFAnalytics")
 ```
+
+
