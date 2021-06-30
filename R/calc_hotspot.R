@@ -1,6 +1,6 @@
 ###################################################################################################################################
 
-#' @title get_hotspots
+#' @title calc_hotspots
 #' @description Hotspots for cumulative incidence or mortality. Need to supply JHU and WHO combined dataset.
 #' Original code by Kathryn Winglee
 #' Modified by Adam Vaughan & Michelle Schmitz / James Fuller / Imran Mujawar
@@ -15,7 +15,7 @@
 #' \dontrun{
 #' hotspot_df <- get_hotspot()}
 
-get_hotspots <- function(df_ncov){
+calc_hotspots <- function(df_ncov){
 
   # If base data frame is missing, then call the script to generate it
   if (missing(df_ncov)) {

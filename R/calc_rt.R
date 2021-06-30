@@ -70,7 +70,7 @@ epi_curve_14 <- function(country, ctyname){
 
 ###################################################################################################################################
 
-#' @title get_rts
+#' @title calc_rts
 #' @description Run EpiEstim on JHU and WHO.
 #' @param df_jhu Optional.
 #' If not provided, will use the package provided countries_data and add_country_dates to make the most current dataset.
@@ -81,7 +81,7 @@ epi_curve_14 <- function(country, ctyname){
 #' @export
 #'
 
-get_rts <- function(covid_sources){
+calc_rts <- function(covid_sources){
 
   # If JHU dataframe is missing as input, then call the script to generate it
   if (missing(covid_sources)) {
@@ -89,8 +89,8 @@ get_rts <- function(covid_sources){
     df <- get_covid_sources()
   }
 
-  df <- rbind(get_jhu_rt() %>% dplyr::mutate(data_source = "JHU"),
-              get_who_rt() %>% dplyr::mutate(data_source = "WHO")) %>%
+  df <- rbind(calc_jhu_rt() %>% dplyr::mutate(data_source = "JHU"),
+              calc_who_rt() %>% dplyr::mutate(data_source = "WHO")) %>%
     dplyr::mutate(ou_date_src_match = paste(ou_date_match, data_source, sep="_"))
 
   return(df)
@@ -98,7 +98,7 @@ get_rts <- function(covid_sources){
 
 ###################################################################################################################################
 
-#' @title get_jhu_rt
+#' @title calc_jhu_rt
 #' @description Run EpiEstim on JHU.
 #' @param df_jhu Optional.
 #' If not provided, will use the package provided countries_data and add_country_dates to make the most current dataset.
@@ -109,7 +109,7 @@ get_rts <- function(covid_sources){
 #' @export
 #'
 
-get_jhu_rt <- function(df_jhu){
+calc_jhu_rt <- function(df_jhu){
 
   # If JHU dataframe is missing as input, then call the script to generate it
   if (missing(df_jhu)) {
@@ -199,7 +199,7 @@ get_jhu_rt <- function(df_jhu){
 
 ###################################################################################################################################
 
-#' @title get_who_rt
+#' @title calc_who_rt
 #' @description Run EpiEstim on WHO
 #' @param df_jhu Optional.
 #' If not provided, will use the package provided countries_data and add_country_dates to make the most current dataset.
@@ -210,7 +210,7 @@ get_jhu_rt <- function(df_jhu){
 #' @export
 #'
 
-get_who_rt <- function(df_who){
+calc_who_rt <- function(df_who){
 
   # If WHO dataframe is missing as input, then call the script to generate it
   if (missing(df_who)) {

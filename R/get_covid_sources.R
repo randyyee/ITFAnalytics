@@ -99,25 +99,25 @@ get_jhu_covid <- function(countries_dates){
       deaths_new = `New Deaths`,
       deaths_cum = `Cumulative Deaths`
     ) %>%
-    dplyr::mutate(iso3code = dplyr::case_when(country %in% c("International Conveyance") ~ "OTH",
-                                country == "Eswatini" ~passport::parse_country("Swaziland", to = "iso3c", language = c("en")),
-                                country == "Kosovo" ~ "XKX",
-                                TRUE ~passport::parse_country(country, to = "iso3c", language = c("en")))) %>%
+    dplyr::mutate(iso3code = dplyr::case_when(country == "International Conveyance" ~ "OTH",
+                                              country == "Eswatini" ~passport::parse_country("Swaziland", to = "iso3c", language = c("en")),
+                                              country == "Kosovo" ~ "XKX",
+                                              TRUE ~passport::parse_country(country, to = "iso3c", language = c("en")))) %>%
     dplyr::filter(!is.na(iso3code)) %>%
     dplyr::select(-country) %>%
     dplyr::group_by(iso3code) %>%
     # Adding back all the first cases
-    dplyr::mutate(firstcase = dplyr::if_else(date == min(date), 1, 0)) %>%
+    dplyr::mutate(firstcase  = dplyr::if_else(date == min(date), 1, 0)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(cases_new = dplyr::if_else(firstcase==1, cases_cum, as.integer(cases_new))) %>%
-    dplyr::mutate(deaths_new = dplyr::if_else(firstcase==1, deaths_cum, as.integer(deaths_new))) %>%
+    dplyr::mutate(cases_new  = dplyr::if_else(firstcase == 1, cases_cum, as.integer(cases_new))) %>%
+    dplyr::mutate(deaths_new = dplyr::if_else(firstcase == 1, deaths_cum, as.integer(deaths_new))) %>%
     dplyr::select(-firstcase) %>%
     # Sum over cruise ships
     dplyr::group_by(iso3code,date) %>%
-    dplyr::summarise(cases_new=sum(cases_new),
-              deaths_new=sum(deaths_new),
-              cases_cum=sum(cases_cum),
-              deaths_cum=sum(deaths_cum)) %>%
+    dplyr::summarise(cases_new  = sum(cases_new),
+                     deaths_new = sum(deaths_new),
+                     cases_cum  = sum(cases_cum),
+                     deaths_cum = sum(deaths_cum)) %>%
     dplyr::ungroup()
 
 
@@ -130,8 +130,18 @@ get_jhu_covid <- function(countries_dates){
 
   # Getting the basic final dataset
   base_data <- dplyr::left_join(countries_dates, df) %>%
-    dplyr::select(country, date, cases_new, cases_cum, deaths_new, deaths_cum, who_region, pop_2020yr, iso3code, ou_date_match, iso2code) %>%
-    dplyr::mutate_if(is.numeric, ~replace(., is.na(.), 0))
+    dplyr::select(country,
+                  date,
+                  cases_new,
+                  cases_cum,
+                  deaths_new,
+                  deaths_cum,
+                  who_region,
+                  pop_2020yr,
+                  iso3code,
+                  ou_date_match,
+                  iso2code) %>%
+    dplyr::mutate_if(is.numeric, ~ replace(., is.na(.), 0))
 
   return(base_data)
 }
