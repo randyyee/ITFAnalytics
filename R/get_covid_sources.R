@@ -148,7 +148,6 @@ get_jhu_covid <- function(countries_dates){
 #' @importFrom magrittr `%>%`
 #'
 #' @export
-#'
 
 get_who_covid <- function(countries_dates){
 

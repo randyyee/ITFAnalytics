@@ -9,7 +9,7 @@ output: github_document
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of ITFAnalytics is to collect the functions need to access and prepare various COVID data sources.
+The goal of ITFAnalytics is to collect the functions needed to access and prepare various COVID data sources.
 
 ## Installation
 
