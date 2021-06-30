@@ -29,7 +29,7 @@ calc_riskmatrix <- function(covid_sources, rts) {
     dplyr::ungroup() %>%
     # zero out negative values
     dplyr::mutate_if(is.numeric, ~replace(., . < 0, 0)) %>%
-    dplyr::mutate(inci         = if_else(`Population 2020` > 0, ((wkcase/`Population 2020`)/7) * 100000, NA_real_)) %>%
+    dplyr::mutate(inci         = dplyr::if_else(`Population 2020` > 0, ((wkcase/`Population 2020`)/7) * 100000, NA_real_)) %>%
     dplyr::rename(Rt           = mean.mtf) %>%
     dplyr::mutate(ou_src_match = paste(country_code, data_source, sep="_"))
 

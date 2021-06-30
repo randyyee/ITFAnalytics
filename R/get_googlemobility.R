@@ -14,7 +14,9 @@
 get_googlemobility <- function() {
 
   # Pulling in the Google mobility data
-  gmob <- read.csv("https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv", encoding="UTF-8") %>%
+  gmob <- read.csv("https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv", encoding="UTF-8")
+
+  df <- gmob %>%
     dplyr::filter(sub_region_1 == "") %>%
     dplyr::mutate(country_region = dplyr::if_else(country_region == "Namibia", "NA", country_region),
                   Date           = as.Date(date)) %>%
@@ -26,5 +28,5 @@ get_googlemobility <- function() {
     dplyr::left_join(dplyr::select(countries_data, iso2code, iso3code) %>% unique()) %>%
     dplyr::mutate(ou_date_match = paste(iso3code, Date, sep = "_"))
 
-  return(dfx)
+  return(list(gmob, df))
 }
