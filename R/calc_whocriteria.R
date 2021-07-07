@@ -38,7 +38,7 @@ calc_whocriteria <- function(covid_sources, df_testing_long, rts){
     dplyr::group_by(data_source, country_code) %>%
     dplyr::arrange(Date) %>%
     # Moving average of weekly cases and weekly deaths
-    dplyr::mutate(mavr_wk = zoo:rollmean(wkcase, k = 7, fill = NA, align = "right"),
+    dplyr::mutate(mavr_wk = zoo::rollmean(wkcase, k = 7, fill = NA, align = "right"),
            mort_wk = zoo:rollmean(wkdeath, k = 7, fill = NA, align = "right")) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(mavr_wk_inci = dplyr::if_else(`Population 2020` > 0, (mavr_wk/`Population 2020`)*100000, NA_real_)) %>%
@@ -60,7 +60,7 @@ calc_whocriteria <- function(covid_sources, df_testing_long, rts){
     dplyr::ungroup() %>%
     # Change plateaus flanked by growth or decline as growth or decline respectively
     dplyr::arrange(data_source, country_code, Date) %>%
-    dplyr::fill(traj, .direction = "down") %>%
+    tidyr::fill(traj, .direction = "down") %>%
     dplyr::mutate(numdaysx       = dplyr::if_else(traj == dplyr::lag(traj, 1), 1, 0)) %>%
     dplyr::mutate(numdays_mort   = dplyr::if_else(mortraj == dplyr::lag(mortraj, 1),1,0)) %>%
     dplyr::mutate(varx           = 1) %>%

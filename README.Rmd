@@ -11,6 +11,8 @@ output: github_document
 
 The goal of ITFAnalytics is to collect the functions needed to access and prepare various COVID data sources.
 
+This package is divided into two main sections: analytical datasets and data visualizations.
+
 ## Installation
 
 You can install the released version of ITFAnalytics from [Github](https://github.com/randyyee/ITFAnalytics) with:
@@ -19,4 +21,6 @@ You can install the released version of ITFAnalytics from [Github](https://githu
 devtools::install_github("randyyee/ITFAnalytics")
 ```
 
+## COVAD - COVID Analytical Datasets
 
+## COVIS - COVID Visualizations

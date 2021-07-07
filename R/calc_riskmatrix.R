@@ -111,7 +111,7 @@ calc_riskmatrix_v3 <- function(df_ncov){
 
   df <- df_ncov %>%
     dplyr::select(-ou_date_match) %>%
-    dplyr::mutate(cases_cum      = dplyr::if_else(is.na(`Cumulative Cases`), 0, `Cumulative Cases`)) %>%
+    dplyr::mutate(cases_cum      = dplyr::if_else(is.na(`Cumulative Cases`),  0, `Cumulative Cases`)) %>%
     dplyr::mutate(deaths_cum     = dplyr::if_else(is.na(`Cumulative Deaths`), 0, `Cumulative Deaths`)) %>%
     dplyr::mutate_if(is.numeric, ~replace(., . < 0, 0)) %>%
     dplyr::group_by(data_source, country_code) %>%
@@ -119,16 +119,16 @@ calc_riskmatrix_v3 <- function(df_ncov){
     dplyr::mutate(wkcase         =  cases_cum - dplyr::lag(cases_cum, 7)) %>%
     dplyr::mutate(prev_wkcase    =  dplyr::lag(cases_cum, 7) - dplyr::lag(cases_cum, 14)) %>%
     dplyr::mutate(wkdeath        =  deaths_cum - dplyr::lag(deaths_cum, 7)) %>%
-    dplyr::mutate(prev_wkdeath   =  ldplyr::ag(deaths_cum, 7) - dplyr::lag(deaths_cum, 14)) %>%
+    dplyr::mutate(prev_wkdeath   =  dplyr::lag(deaths_cum, 7) - dplyr::lag(deaths_cum, 14)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate_if(is.numeric, ~replace(., .<0, NA_real_)) %>%
     dplyr::mutate(case_diff      = wkcase-prev_wkcase) %>%
     dplyr::mutate(death_diff     = wkdeath-prev_wkdeath) %>%
-    dplyr::mutate(wkcase_change  = dplyr::if_else(prev_wkcase > 0, (case_diff)/prev_wkcase, NA_real_)) %>%
+    dplyr::mutate(wkcase_change  = dplyr::if_else(prev_wkcase  > 0, (case_diff)/prev_wkcase, NA_real_)) %>%
     dplyr::mutate(wkdeath_change = dplyr::if_else(prev_wkdeath > 0, (death_diff)/prev_wkdeath, NA_real_)) %>%
     dplyr::mutate(inci           = dplyr::if_else(`Population 2018.x` > 0, ((wkcase/`Population 2018.x`)/7) * 100000,  NA_real_)) %>%
     dplyr::mutate(incideath      = dplyr::if_else(`Population 2018.x` > 0, ((wkdeath/`Population 2018.x`)/7) * 100000, NA_real_)) %>%
-    dplyr::mutate(pct_chng       = dplyr::if_else(!(is.na(wkcase_change)), wkcase_change * 100, NA_real_)) %>%
+    dplyr::mutate(pct_chng       = dplyr::if_else(!(is.na(wkcase_change)),   wkcase_change * 100, NA_real_)) %>%
     dplyr::mutate(pct_chngdeath  = dplyr::if_else( !(is.na(wkdeath_change)), wkdeath_change * 100, NA_real_)) %>%
     dplyr::mutate(Rt             = 1) %>%
     dplyr::mutate(ou_src_match   = paste(country_code, data_source, sep="_"))
