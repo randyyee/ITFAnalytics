@@ -8,6 +8,7 @@
 #' This version adopts the script for Power BI
 #' updated 9/24 with new algorithm from CBS GitHub page: https://github.com/cdcent/covid-response-analyses - Andrea Stewart
 #' @importFrom magrittr `%>%`
+#' @importFrom data.table `:=`
 #'
 #' @export
 #'
@@ -35,7 +36,7 @@ calc_hotspots <- function(df_ncov){
       dplyr::filter(data_source== dfsource)
 
     #consolidate the df.Countries.Daily dataset as some areas have multiple observations
-    df.cases_fin <- df.Countries.Daily[c("country_code","Date", "Population 2020", "Cumulative Cases")] %>%
+    df.cases_fin <- df.Countries.Daily %>%
       dplyr::group_by(country_code, Date,`Population 2020`) %>%
       dplyr::summarise(Cumulative_Cases = sum(`Cumulative Cases`, na.rm=T)) %>%
       dplyr::ungroup() %>%
@@ -43,28 +44,11 @@ calc_hotspots <- function(df_ncov){
       dplyr::mutate(Cumulative_Cases = dplyr::case_when(Cumulative_Cases < 0    ~0,
                                                         is.na(Cumulative_Cases) ~0,
                                                         TRUE ~Cumulative_Cases)) %>%
-      #select(-data_source,-country_code) %>%
       #rename to align with CBS code names
-      dplyr::rename(
-        id=country_code,
-        cases=Cumulative_Cases,
-        pop=`Population 2020`,
-        date=Date)
-
-    #DEATHS
-    # df.deaths_fin <- df.Countries.Daily[c("country_code","Date", "Population 2020", "Cumulative Deaths")] %>%
-    #   dplyr::group_by(country_code, Date, `Population 2020`) %>%
-    #   dplyr::summarise(Cumulative_Deaths = sum(`Cumulative Deaths`, na.rm=T)) %>%
-    #   dplyr::ungroup() %>%
-    #   dplyr::filter(`Population 2020` > 0 & !is.na(`Population 2020`)) %>%
-    #   dplyr::mutate(Cumulative_Deaths=dplyr::case_when(Cumulative_Deaths < 0~0,
-    #                                                    is.na(Cumulative_Deaths)~0,
-    #                                                    TRUE ~Cumulative_Deaths)) %>%
-    #   dplyr::rename(
-    #     id=country_code,
-    #     cases=Cumulative_Deaths,
-    #     pop=`Population 2020`,
-    #     date=Date)
+      dplyr::rename(id=country_code,
+                    cases=Cumulative_Cases,
+                    pop=`Population 2020`,
+                    date=Date)
 
     alldata <- hotspot(df.cases_fin,"case", 0.1, 10, 100, 7, 0.6, dsource=dfsource)
 
@@ -82,7 +66,6 @@ calc_hotspots <- function(df_ncov){
 
     return(allthedata)
   }
-
 
   trajdf <- dplyr::bind_rows(final_hotspot("WHO"), final_hotspot("JHU"))
   mapdf <- trajdf %>%
@@ -108,6 +91,7 @@ calc_hotspots <- function(df_ncov){
 #' @param dsource Either "WHO" or "JHU"
 #'
 #' @importFrom magrittr `%>%`
+#' @importFrom data.table `:=`
 #'
 #' @export
 

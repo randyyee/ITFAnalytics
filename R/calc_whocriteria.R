@@ -39,7 +39,7 @@ calc_whocriteria <- function(covid_sources, df_testing_long, rts){
     dplyr::arrange(Date) %>%
     # Moving average of weekly cases and weekly deaths
     dplyr::mutate(mavr_wk = zoo::rollmean(wkcase, k = 7, fill = NA, align = "right"),
-           mort_wk = zoo:rollmean(wkdeath, k = 7, fill = NA, align = "right")) %>%
+           mort_wk = zoo::rollmean(wkdeath, k = 7, fill = NA, align = "right")) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(mavr_wk_inci = dplyr::if_else(`Population 2020` > 0, (mavr_wk/`Population 2020`)*100000, NA_real_)) %>%
     # getting variable for growth and decline
@@ -66,7 +66,7 @@ calc_whocriteria <- function(covid_sources, df_testing_long, rts){
     dplyr::mutate(varx           = 1) %>%
     dplyr::mutate(varx_mort      = 1) %>%
     # Getting growth infection points
-    dplyr::mutate(growth_inflect = dplyr::if_else(numdaysx==1 & lead(numdaysx,1) == 0 & traj == "growth", 1, 0))
+    dplyr::mutate(growth_inflect = dplyr::if_else(numdaysx==1 & dplyr::lead(numdaysx,1) == 0 & traj == "growth", 1, 0))
 
 
 
@@ -84,7 +84,7 @@ calc_whocriteria <- function(covid_sources, df_testing_long, rts){
     # get last peak incidence value
     dplyr::mutate(lastpeak_inc = dplyr::if_else(growth_inflect==1, mavr_wk_inci, NA_real_)) %>%
     dplyr::arrange(data_source, country_code, Date) %>%
-    dplyr::fill(lastpeak_inc, .direction = "down") %>%
+    tidyr::fill(lastpeak_inc, .direction = "down") %>%
     dplyr::mutate(epi_cat = dplyr::case_when(growth_inflect==1                                                ~ "Peak",
                                              traj == "decline" & varx>=21 &  mavr_wk_inci<=(0.5*lastpeak_inc) ~ "Decline (criteria met)",
                                              trajx == "growth"                                                ~ "Growth",
@@ -92,7 +92,7 @@ calc_whocriteria <- function(covid_sources, df_testing_long, rts){
                                              traj == "decline" & varx>=21 &  mavr_wk_inci>(0.5*lastpeak_inc)  ~ "Decline (3+wks, criteria not met)",
                                              trajx == "plateau"                                               ~ "Plateau",
                                              TRUE ~ "not estimated")) %>%
-    mutate(death_cat = dplyr::case_when(mortraj == "decline" & varx_mort>=21                                  ~"Decline (criteria met)",
+    dplyr::mutate(death_cat = dplyr::case_when(mortraj == "decline" & varx_mort>=21                                  ~"Decline (criteria met)",
                                         mortraj == "growth"                                                   ~"Growth",
                                         mortraj == "decline" & varx_mort<21                                   ~"Decline (<3 wks)",
                                         mortraj == "plateau"                                                  ~"Plateau",
@@ -101,15 +101,15 @@ calc_whocriteria <- function(covid_sources, df_testing_long, rts){
 
   #testing criteria: <= 5% positive for 2 weeks
   names(df_testing_long)[which(colnames(df_testing_long)=="source")] <- "Source_testing"
-  dfx2 <- merge(df1,df_testing_long,by=c("ou_date_match"),all.x=T)
+  dfx2 <- merge(df1, df_testing_long, by=c("ou_date_match"),all.x=T)
   k=15
   dfx2 <- dfx2 %>%
     #group_by(data_source,country_code) %>%
     dplyr::arrange(Source_testing, data_source, country_code, Date) %>%
-    dplyr::mutate(test_5               =  perc_positive_testing < 5) %>%
+    dplyr::mutate(test_5               = perc_positive_testing < 5) %>%
     dplyr::mutate(test_5_3weeks        = zoo::rollapplyr(test_5, k, function(x) all(x[k]==T & (x[k] == x[-k])), fill = NA)) %>%
     dplyr::mutate(who_criteria_testing = ifelse(test_5_3weeks == T, "Criteria Met","Criteria Not Met")) %>%
-    ungroup()
+    dplyr::ungroup()
   ##New addition
   last_date <- dfx2 %>%
     dplyr::filter(!is.na(who_criteria_testing)) %>%
@@ -126,7 +126,7 @@ calc_whocriteria <- function(covid_sources, df_testing_long, rts){
   dfx3 <- dfx3 %>%
     dplyr::arrange(data_source.x, country_code, Date) %>%
     dplyr::mutate(rt_1            = mean.mtf  < 1) %>%
-    dplyr::mutate(rt_1_2weeks     = rollapplyr(rt_1, k, function(x) all(x[k] == T & (x[k] == x[-k])), fill = NA)) %>%
+    dplyr::mutate(rt_1_2weeks     = zoo::rollapplyr(rt_1, k, function(x) all(x[k] == T & (x[k] == x[-k])), fill = NA)) %>%
     dplyr::mutate(who_criteria_Rt = ifelse(rt_1_2weeks == T, "Criteria Met","Criteria Not Met")) %>%
     dplyr::ungroup()
 

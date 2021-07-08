@@ -7,14 +7,14 @@
 map_template(df, world, category_color_labels, category_color_values)
 }
 \arguments{
-\item{df}{A dataframe with the following: region, country, date, factor value}
+\item{df}{A dataframe with the following: country, geometry, date, value = factor value}
 
 \item{world}{A dataframe with the following: geometry}
 
-\item{category_color_labels}{List of labels that should map to the factor value of the df}
+\item{category_color_labels}{List of labels that should map to the factor values of the df}
 
 \item{category_color_values}{List of color values for mapping the labels. Needs to have the same length as category_color_labels!}
 }
 \description{
-Cross-sectional map: Average daily incidence for the past 7 days for each country.
+Cross-sectional map.
 }

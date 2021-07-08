@@ -54,25 +54,29 @@ get_jhu_covid <- function(countries_dates){
     countries_dates <- add_country_dates(countries_data)
   }
 
-  # Convert to Long Data
-  cases <- cases %>%
-    tidyr::gather("Date", "Cumulative Cases", c(5:length(names(cases)))) %>%
-    dplyr::mutate(Date = as.Date(as.character(Date), format="%m/%d/%y"))
+  #Convert to Long Data
+  cases.long <- cases %>%
+    tidyr::gather("Date.Orig", "Cumulative Cases", c(5:length(names(cases))))
 
-  deaths <- deaths %>%
-    tidyr::gather("Date", "Cumulative Deaths", c(5:length(names(cases)))) %>%
-    dplyr::mutate(Date = as.Date(as.character(Date), format="%m/%d/%y"))
+  deaths.long <- deaths %>%
+    tidyr::gather("Date.Orig", "Cumulative Deaths", c(5:length(names(cases))))
 
 
-  # Combine Case and Death Data
-  data.long <- merge(cases, deaths, by=c("Province/State","Country/Region","Lat","Long","Date"), all=TRUE)
+  #Clean up Date and Time
+  cases.long$Date <- as.Date(as.character(cases.long$Date.Orig), format="%m/%d/%y")
+  deaths.long$Date <- as.Date(as.character(deaths.long$Date.Orig), format="%m/%d/%y")
+
+  #Combine Case and Death Data
+  data.long <- merge(cases.long, deaths.long, by=c("Province/State","Country/Region","Lat","Long","Date"), all=TRUE)
+  # Remove the redundant date column
+  data.long[c("Date.Orig.x","Date.Orig.y")] <- NULL
 
   # Calculate Daily New Cases and New Deaths, Then Make 0 if negative)
   data.long$Country.Province <- paste0(data.long$`Country/Region`," - ", data.long$`Province/State`)
   data.long$`New Cases`  <- ave(data.long$`Cumulative Cases`, factor(data.long$Country.Province), FUN=function(x) c(NA,diff(x)))
   data.long$`New Deaths` <- ave(data.long$`Cumulative Deaths`, factor(data.long$Country.Province), FUN=function(x) c(NA,diff(x)))
-  data.long$`New Cases`[data.long$`New Cases` <0] <- 0
-  data.long$`New Deaths`[data.long$`New Deaths` <0] <- 0
+  data.long$`New Cases`[data.long$`New Cases`   <0]   <- 0
+  data.long$`New Deaths`[data.long$`New Deaths` <0]   <- 0
 
 
   # Aggregate data to the country level
@@ -91,14 +95,12 @@ get_jhu_covid <- function(countries_dates){
 
 
   df <- data.countries %>%
-    dplyr::rename(
-      country    = Country,
-      date       = Date,
-      cases_new  = `New Cases`,
-      cases_cum  = `Cumulative Cases`,
-      deaths_new = `New Deaths`,
-      deaths_cum = `Cumulative Deaths`
-    ) %>%
+    dplyr::rename(country    = Country,
+                  date       = Date,
+                  cases_new  = `New Cases`,
+                  cases_cum  = `Cumulative Cases`,
+                  deaths_new = `New Deaths`,
+                  deaths_cum = `Cumulative Deaths`) %>%
     dplyr::mutate(iso3code = dplyr::case_when(country == "International Conveyance" ~ "OTH",
                                               country == "Eswatini" ~passport::parse_country("Swaziland", to = "iso3c", language = c("en")),
                                               country == "Kosovo" ~ "XKX",

@@ -222,5 +222,5 @@ get_testing <- function() {
 
   testinglong <- dplyr::left_join(testinglong, geodf)
 
-  return(list(tst_crossx, testinglong))
+  return(list(testinglong, tst_crossx))
 }
