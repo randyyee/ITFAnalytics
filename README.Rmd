@@ -21,6 +21,23 @@ You can install the released version of ITFAnalytics from [Github](https://githu
 devtools::install_github("randyyee/ITFAnalytics")
 ```
 
-## COVAD - COVID Analytical Datasets
+## Legacy COVAD - COVID Analytical Datasets
+
+| Metadata Functions | Get Functions      | Calculation Functions | Production Functions |
+|--------------------|--------------------|-----------------------|----------------------|
+| get_countries      | get_jhu_covid      | calc_jhu_rt           | prod_dashboard       |
+| add_country_dates  | get_who_covid      | calc_who_rt           |                      |
+|                    | get_covid_sources  | calc_rts              |                      |
+|                    | get_vaccinations   | calc_riskmatrix       |                      |
+|                    | get_testing        | calc_riskmatrix_v2    |                      |
+|                    | get_googlemobility | calc_riskmatrix_v3    |                      |
+|                    |                    | view_countryoverlays  |                      |
 
 ## COVIS - COVID Visualizations
+
+| Plot Functions | Map Functions    | Table Functions       |
+|----------------|------------------|-----------------------|
+| plot_epicurve  | map_template     | table_10mostcases     |
+|                | map_burden       | table_10mostincidence |
+|                | map_trend        | table_10percentchange |
+|                | map_vaccinations |                       |

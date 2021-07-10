@@ -16,12 +16,11 @@ knitr::opts_chunk$set(
 
 ## How to run analytic datasets for the ITF Dashboard
 
-Note: Best to run in this order so outputs can be reused in subsequent functions reducing runtime.
+Note: Best to run in this order so outputs can be reused in subsequent functions reducing run-time.
 
 ```{r}
 library(ITFAnalytics)
 
-df_country       <- countries_data 
 df_country_date  <- add_country_dates(countries_data)
 
 df_jhu           <- get_jhu_covid(df_country_date) 
@@ -64,5 +63,13 @@ vaccinations_categories    <- vax[[4]]
 overlay                    <- view_countryoverlays(df_ncov, gmob[[1]])  
 overlay_cases_deaths       <- overlay[[1]]  
 overlay_stringency         <- overlay[[2]]  
-overlay_mobility           <- overlay[[3]]  
+overlay_mobility           <- overlay[[3]] 
+
+files <- mget(ls())
+
+for (i in 1:length(files)){
+  if(class(files[[i]])=="data.frame"){
+    write.csv(files[[i]], paste0(names(files[i]), ".csv", sep = ""))
+  }
+}
 ```
