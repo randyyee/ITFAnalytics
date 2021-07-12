@@ -1,7 +1,7 @@
-###################################################################################################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title get_countries
-#' @description Get countries and their continents, ISO codes, WHO region, and total population.
+#' @description (Legacy) Get countries and their continents, ISO codes, WHO region, and total population.
 #' Output is available through the package as "countries_data," but this function can be used to recreate this dataset.
 #' To regenerate and make the data available again for the package, run the following in dev and rebuild package:
 #' 1. countries_data <- get_countries()
@@ -102,10 +102,10 @@ get_countries <- function(){
 }
 
 
-###################################################################################################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title add_country_dates
-#' @description Add dates to country data
+#' @description (Legacy) Add dates to country data
 #' @param countries_df Optional.
 #' If not provided, will use the package provided countries_data.
 #' See get_countries for description of required input.
@@ -138,7 +138,7 @@ add_country_dates <- function(countries_df){
 }
 
 
-###################################################################################################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title get_country_coords
 #' @description Add dates to country data
@@ -170,4 +170,53 @@ get_country_coords <- function(world = file.choose()){
     dplyr::filter(!ADMIN == 'Northern Cyprus') #remove Northern Cyprus
 
   return(df)
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @title get_country_populations
+#' @description Get country populations
+#' get_covid_df() matched with UN Estimates for 2020. Remainders matched with CIA Factbook (Guernsey, Jersey, Pitcairn Islands, Kosovo).
+#' Output is available through the package as "ountry_populations," but this function can be used to recreate this dataset.
+#' To regenerate and make the data available again for the package, run the following in dev and rebuild package:
+#' 1. country_populations <- get_country_populations()
+#' 2. usethis::use_data(country_populations, overwrite=T)
+#' @importFrom magrittr `%>%`
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' get_country_populations <- get_country_populations()}
+
+get_country_populations <- function(){
+
+  df <- openxlsx::read.xlsx("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2019_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES.xlsx",
+                            sheet = 1, startRow = 17) %>%
+    filter(Type == "Country/Area") %>%
+    select(country = `Region,.subregion,.country.or.area.*`, `2020`) %>%
+    mutate(`2020` = as.numeric(`2020`) * 1000) %>%
+    mutate(country = recode(country,
+                            "Bonaire, Sint Eustatius and Saba" = "Bonaire, Sint Eustatius, and Saba",
+                            "Micronesia (Fed. States of)"      = "Micronesia (Federated States of)",
+                            "Côte d'Ivoire"                    = "Cote d'Ivoire",
+                            "United Kingdom"                   = "The United Kingdom",
+                            "Dem. People's Republic of Korea"  = "Democratic People's Republic of Korea",
+                            "Saint Martin (French part)"       = "Saint Martin",
+                            "Northern Mariana Islands"         = "Northern Mariana Islands (Commonwealth of the)",
+                            "State of Palestine"               = "occupied Palestinian territory, including east Jerusalem",
+                            "Sint Maarten (Dutch part)"        = "Sint Maarten",
+                            "Wallis and Futuna Islands"        = "Wallis and Futuna",
+                            "China, Hong Kong SAR"             = "Hong Kong",
+                            "China, Taiwan Province of China"  = "Taiwan",
+                            "China, Macao SAR"                 = "Macau")) %>%
+    add_row(country = "Guernsey",         `2020` =  67334)  %>% # CIA
+    add_row(country = "Jersey",           `2020` =  101476) %>%
+    add_row(country = "Pitcairn Islands", `2020` =  50)     %>%
+    add_row(country = "Kosovo",           `2020` =  1935259)
+
+  #test <- left_join(who_list, df)
+
+  return(df)
+
 }

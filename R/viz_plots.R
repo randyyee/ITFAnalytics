@@ -18,7 +18,7 @@ plot_epicurve <- function(df, transparent = T){
   region_label <- "WHO Region"
   gtitle       <- "Confirmed COVID-19 cases by week of report and WHO region"
 
-  df <- ggplot2::ggplot(data    = df,
+  g <- ggplot2::ggplot(data    = df,
                         mapping = aes(x    = lubridate::floor_date(date, "week", week_start = 1),
                                       y    = new_cases,
                                       fill = region)) +
@@ -43,21 +43,21 @@ plot_epicurve <- function(df, transparent = T){
     ggplot2::labs(title    = gtitle,
                   subtitle = paste0(format(min(df$date, na.rm = T), "%B %d, %Y"), " - ",
                                     format(max(df$date, na.rm = T), "%B %d, %Y"))) +
-    ggplot2::theme(plot.title   = ggplot2::element_text(size = 18, face = "bold"),
-                   axis.text    = ggplot2::element_text(size = 8),
-                   axis.title   = ggplot2::element_text(size = 10),
-                   legend.title = ggplot2::element_text(size = 12, face = "bold"),
-                   legend.text  = ggplot2::element_text(size = 9)) +
-    ggplot2::guides(fill = ggplot2::guide_legend(overide.aex = list(size = 9)))
+    ggplot2::theme(plot.title   = ggplot2::element_text(size  = 18, face = "bold"),
+                   axis.text    = ggplot2::element_text(size  = 8),
+                   axis.title   = ggplot2::element_text(size  = 10),
+                   legend.title = ggplot2::element_text(size  = 12, face = "bold"),
+                   legend.text  = ggplot2::element_text(size  = 9)) +
+    ggplot2::guides(fill = ggplot2::guide_legend(overide.aex  = list(size = 9)))
 
   if(transparent == T){
-    return(df +
+    return(g +
              ggplot2::theme(panel.background  = ggplot2::element_rect(fill = "transparent"),
                             plot.background   = ggplot2::element_rect(fill = "transparent"),
                             panel.grid        = ggplot2::element_blank(),
                             legend.background = ggplot2::element_rect(fill = "transparent")))
   }else{
-    return(df)
+    return(g)
   }
 
 }

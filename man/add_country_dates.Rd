@@ -12,7 +12,7 @@ If not provided, will use the package provided countries_data.
 See get_countries for description of required input.}
 }
 \description{
-Add dates to country data
+(Legacy) Add dates to country data
 }
 \examples{
 \dontrun{

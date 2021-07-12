@@ -31,7 +31,12 @@ devtools::install_github("randyyee/ITFAnalytics")
 |                    | get_vaccinations   | calc_riskmatrix       |                      |
 |                    | get_testing        | calc_riskmatrix_v2    |                      |
 |                    | get_googlemobility | calc_riskmatrix_v3    |                      |
+|                    |                    | calc_hotspots         |                      |
 |                    |                    | view_countryoverlays  |                      |
+
+## COVAC - COVID Analytical Checks
+
+
 
 ## COVIS - COVID Visualizations
 
