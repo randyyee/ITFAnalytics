@@ -115,7 +115,7 @@ plot_epicurve_ind <- function(df, type = "cases", incidence = T){
       ggplot2::scale_x_date(breaks       = c(by = "3 weeks"),
                             date_labels  = "%d\n%b") +
       ggplot2::scale_y_continuous(labels = comma) +
-      ggplot2::labs(title    = if(type == "cases") {paste0("COVID-19 Cases per 100,000 People: ", unique(df$country))} else {paste0("COVID-19 Deaths per 100,000 People:", unique(df$country))},
+      ggplot2::labs(title    = if(type == "cases") {paste0("COVID-19 Cases per 100,000 People: ", unique(df$country))} else {paste0("COVID-19 Deaths per 100,000 People: ", unique(df$country))},
                     subtitle = paste0(format(min(as.Date(df$date)), "%B %d, %Y"), " - ", format(max(df$date), "%B %d, %Y"))) +
       ggplot2::theme(plot.title   = ggplot2::element_text(size = 14, face = "bold"),
                      axis.text    = ggplot2::element_text(size = 8),

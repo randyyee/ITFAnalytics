@@ -4,7 +4,7 @@
 #' @description Cross-sectional map.
 #' @param df A dataframe with the following: country, geometry, date, result = factor value
 #' @param world A dataframe with the following: geometry
-#' @param category_color_labels List of labels that should map to the factor values of the df
+#' @param category_color_labels List of labels that should map to the factor values of the df. Use "None" if no categories.
 #' @param category_color_values List of color values for mapping the labels. Needs to have the same length as category_color_labels!
 #' @importFrom magrittr `%>%`
 #'
