@@ -12,8 +12,36 @@
 
 map_template <- function(df, world, category_color_labels, category_color_values){
 
-  if(length(category_color_labels) != length(category_color_values)){
-    stop("Your category labels are of different lengths!")
+  # if(length(category_color_labels) != length(category_color_values)){
+  #   stop("Your category labels are of different lengths!")
+  # }
+
+  if(category_color_labels == "None")
+  {
+    ggplot2::ggplot(df) + # Param
+      ggplot2::geom_sf(data = world, # Param
+                       aes(geometry = geometry),
+                       fill = "grey99",
+                       size = 0.3) +
+      ggplot2::geom_sf(data = df,
+                       aes(geometry = geometry,
+                           fill = result), # Param
+                       size = 0.2) +
+      ggplot2::theme_void() +
+      ggplot2::scale_fill_manual(values       = category_color_values, # Param
+                                 na.value     = "grey99",
+                                 drop         = F,
+                                 na.translate = F) +
+      ggplot2::theme(plot.title            = ggplot2::element_text(size = 18, face="bold"),
+                     plot.subtitle         = ggplot2::element_text(size = 12),
+                     plot.caption          = ggplot2::element_text(size = 8),
+                     plot.caption.position = "plot",
+                     legend.position       = c(0.02, 0.00),
+                     legend.justification  = c("left", "bottom"),
+                     legend.box.just       = "left",
+                     legend.margin         = ggplot2::margin(3, 3, 3, 3),
+                     legend.title          = ggplot2::element_text(size = 10),
+                     legend.text           = ggplot2::element_text(size = 8))
   }
 
   ggplot2::ggplot(df) + # Param
