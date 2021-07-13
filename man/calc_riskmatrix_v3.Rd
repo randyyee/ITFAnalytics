@@ -7,7 +7,7 @@
 calc_riskmatrix_v3(df_ncov)
 }
 \description{
-Caculate a risk matrix.
+Calculate a risk matrix.
 }
 \examples{
 \dontrun{

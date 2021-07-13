@@ -7,6 +7,16 @@
 #'
 #' @export
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @title table_10mostcases
+#' @description Table for displaying top 10's.
+#' @param df A dataframe with the following and in this order: country, value1 - cases, value2 - percent change
+#' @importFrom magrittr `%>%`
+#'
+#' @export
+
 table_10mostcases <- function(df){
   gt(df) %>%
     gt::tab_header(title        = gt::html(paste0("<b>10 Countries/ Areas with Most New Cases", "</b>"))) %>%

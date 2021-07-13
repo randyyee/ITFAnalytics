@@ -1,0 +1,154 @@
+---
+title: "package_demo"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{package_demo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This is a demo of the ITFAnalytics package...
+
+What is an R package?
+
+Just R with more documentation!
+
+Really it's just R/Github with maybe 2 extra steps
+
+```{r}
+library(ITFAnalytics)
+```
+
+Note, I only need to call the ITFAnalytics package itself. Tidyverse, EpiEstem, zoo, etc. All the packages you use are specified within the package's description. So each analyst who uses this package will automatically be prompted to install all the packages needed to run every function.
+
+And if you want to specify older versions of packages (in case a function gets deprecated), you can also do that too.
+
+# Structure
+
+
+
+# COVID Analytic Datasets
+
+## Metadata Tables
+
+The countries data table which countains all the countries, isocodes, CIA pop estimates, who region, continent name is included within the package itself.
+
+For those of you who remember, mtcars is the same sort of thing...
+
+```{r}
+mtcars
+```
+
+Notice "countries_data" is not in the environment pane of RStudio...
+
+```{r}
+countries_data
+```
+
+We can also store other tables that may be useful to keep static, like the countries geometries...
+
+# COVID Visuals
+
+"viz_...r" files contain all of the graphics currently produced by SAVI (or will contain...)
+
+```{r}
+get_who_covid() %>%
+  dplyr::filter(who_region != "Other") %>%
+  dplyr::filter(!is.na(Date)) %>%
+  dplyr::rename(new_cases = cases_new) %>%
+  dplyr::mutate(region = factor(who_region, levels = c("AMRO", "EURO", "SEARO", "EMRO", "AFRO", "WPRO"))) %>%
+  plot_epicurve() %>% # Note you can chain these ITF functions to the other pipes as well!
+  ggsave(filename = "test.png", width = 10)
+```
+
+## Documentation (params, SOPs, usage, etc.)
+
+Can all be integrated into the package, and will also show up in the RStudio Help pane for all to see!
+
+-------------------------------------------------------------------->
+
+This is the heading of one of the map template function...
+
+```{r}
+#' @title map_template
+#' @description Cross-sectional map for showing categorical values by country.
+#' @param df A dataframe with the following: region, country, date, factor value
+#' @param world A dataframe with the following: geometry
+#' @param category_color_labels List of labels that should map to the factor value of the df
+#' @param category_color_values List of color values for mapping the labels. Needs to have the same length as category_color_labels!
+#' @importFrom magrittr `%>%`
+#'
+#' @export
+
+map_template <- function(df, world, category_color_labels, category_color_values){
+
+  if(length(category_color_labels) != length(category_color_values)){
+    stop("Your category labels are of different lengths!")
+  }
+
+  ggplot2::ggplot(df) + # Param
+    ggplot2::geom_sf(data = world, # Param
+                     aes(geometry = geometry),
+                     fill = "grey99",
+                     size = 0.3) +
+    ggplot2::geom_sf(aes(geometry = geometry),
+                     fill = value, # Param
+                     size = 0.2) +
+    ggplot2::theme_void() +
+    ggplot2::scale_fill_manual(values       = category_color_values, # Param
+                               na.value     = "grey99",
+                               drop         = F,
+                               labels       = category_color_labels, # Param
+                               na.translate = F) +
+    ggplot2::theme(plot.title            = ggplot2::element_text(size = 18, face="bold"),
+                   plot.subtitle         = ggplot2::element_text(size = 12),
+                   plot.caption          = ggplot2::element_text(size = 8),
+                   plot.caption.position = "plot",
+                   legend.position       = c(0.02, 0.00),
+                   legend.justification  = c("left", "bottom"),
+                   legend.box.just       = "left",
+                   legend.margin         = ggplot2::margin(3, 3, 3, 3),
+                   legend.title          = ggplot2::element_text(size = 10),
+                   legend.text           = ggplot2::element_text(size = 8))
+
+}
+```
+
+
+## Resuable functions
+
+A big part of converting a codebase into a package is strategizing how to reuse code strategically...
+
+```{r}
+#' @title map_burden
+#' @description Cross-sectional map: Average daily incidence for the past 7 days for each country.
+#' @param df A dataframe with the following: region, country, date, incidence as 4-level factors (0- <1, 1- <10, 10- <25, 25+)
+#' Produces an epi curve, region stacked bar plot for each epi-week (Monday-Sunday).
+#' Input df SHOULD ONLY HAVE ONE DATE!
+#' @param world A dataframe with the following: admin, geometry, iso3code
+#' @importFrom magrittr `%>%`
+#'
+#' @export
+
+map_burden <- function(df, world){
+
+  if(length(unique(df$date))){
+    warning("Your dataframe has more than 1 date! This is a cross-sectional visualization!")
+  }
+
+  cat_labs <- c("0- <1", "1- <10", "10- <25", "25+")
+  cat_vals <- c("#f1e5a1", "#e7b351", "#d26230", "#aa001e")
+
+  map_template(df, world, cat_labs, cat_vals) +
+    ggplot2::labs(fill = "Average Daily \nIncidence \n(past 7 days) \nper 100,000") +
+    ggplot2::labs(title = "Burden",
+                  subtitle = paste0("Average daily incidence over the past 7 days per 100,000 population, ", format(max(df$date), "%B %d, %Y")))
+}
+```

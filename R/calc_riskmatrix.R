@@ -1,4 +1,4 @@
-###################################################################################################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title calc_riskmatrix
 #' @description Calculate a risk matrix.
@@ -44,7 +44,7 @@ calc_riskmatrix <- function(covid_sources, rts) {
   return(list(df,crossx))
 }
 
-###################################################################################################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title calc_riskmatrix_v2
 #' @description Calculate a risk matrix.
@@ -90,10 +90,10 @@ calc_riskmatrix_v2 <- function(covid_sources){
   return(list(df, crossx))
 }
 
-###################################################################################################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title calc_riskmatrix_v3
-#' @description Caculate a risk matrix.
+#' @description Calculate a risk matrix.
 #' @importFrom magrittr `%>%`
 #'
 #' @export
@@ -142,4 +142,47 @@ calc_riskmatrix_v3 <- function(df_ncov){
     dplyr::select(-datex)
 
   return(list(df, crossx))
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @title calc_gen_riskmatrix
+#' @description Calculate a risk matrix for a generalized df input.
+#'
+#' @param df Dataframe with cumulative_cases and cumulative_deaths
+#' @param population Population dataframe with population
+#'
+#' @importFrom magrittr `%>%`
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' riskmatrix_v3_df <- calc_riskmatrix_v3()}
+#'
+
+calc_gen_riskmatrix <- function(df, population){
+
+  df <- df %>%
+    dplyr::left_join(population) %>%
+    dplyr::mutate_if(is.numeric, ~replace(., . < 0, 0)) %>%
+    dplyr::group_by(source, country_code) %>%
+    dplyr::arrange(date) %>%
+    dplyr::mutate(weekdate             = lubridate::floor_date(date, "week", week_start = 1)) %>%
+    dplyr::mutate(week_case            = cumulative_cases - dplyr::lag(cumulative_cases, 7)) %>%
+    dplyr::mutate(prev_week_case       = dplyr::lag(cumulative_cases, 7) - dplyr::lag(cumulative_cases, 14)) %>%
+    dplyr::mutate(week_death           = cumulative_deaths - dplyr::lag(cumulative_deaths, 7)) %>%
+    dplyr::mutate(prev_week_death      = dplyr::lag(cumulative_deaths, 7) - dplyr::lag(cumulative_deaths, 14)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate_if(is.numeric, ~replace(., .<0, NA_real_)) %>%
+    dplyr::mutate(diff_case            = week_case-prev_week_case) %>%
+    dplyr::mutate(diff_death           = week_death-prev_week_death) %>%
+    dplyr::mutate(week_case_change     = dplyr::if_else(prev_week_case  > 0, (diff_case)/prev_week_case, NA_real_)) %>%
+    dplyr::mutate(week_death_change    = dplyr::if_else(prev_week_death > 0, (diff_death)/prev_week_death, NA_real_)) %>%
+    dplyr::mutate(week_case_incidence  = dplyr::if_else(population > 0, ((week_case/population)/7) * 100000,  NA_real_)) %>%
+    dplyr::mutate(week_death_incidence = dplyr::if_else(population > 0, ((week_death/population)/7) * 100000, NA_real_)) %>%
+    dplyr::mutate(percent_change_case  = dplyr::if_else(!(is.na(week_case_change)),   week_case_change * 100, NA_real_)) %>%
+    dplyr::mutate(percent_change_death = dplyr::if_else( !(is.na(week_death_change)), week_death_change * 100, NA_real_))
+
+  return(df)
 }

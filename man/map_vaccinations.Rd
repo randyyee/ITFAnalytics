@@ -7,8 +7,7 @@
 map_vaccinations(df, world)
 }
 \arguments{
-\item{df}{A dataframe with the following: region, country, date, percent_change AS 6-level factors (<1 1- <3, 3- <10, 10 -<30, 30+).
-Input df SHOULD ONLY HAVE ONE DATE!}
+\item{df}{A dataframe with the following: region, country, date, percent_change AS 6-level factors (<1 1- <3, 3- <10, 10 -<30, 30+).}
 
 \item{world}{A dataframe with the following: admin, geometry, iso3code}
 }

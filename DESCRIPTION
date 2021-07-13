@@ -17,7 +17,8 @@ Imports:
     ggplot2,
     lubridate,
     gt,
-    scales
+    scales,
+    openxlsx
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

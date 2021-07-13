@@ -160,7 +160,7 @@ add_country_dates <- function(countries_df){
 get_country_coords <- function(world = file.choose()){
 
   df <- rgdal::readOGR(world) %>%
-    sp::spTransform(CRS("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")) %>%
+    sp::spTransform(sp::CRS("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")) %>%
     sf::st_as_sf() %>%
     dplyr::select(TYPE, ADMIN, ISO_A3) %>%
     dplyr::mutate(iso3code = passport::parse_country(ADMIN, to="iso3c")) %>%
@@ -193,10 +193,10 @@ get_country_populations <- function(){
 
   df <- openxlsx::read.xlsx("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2019_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES.xlsx",
                             sheet = 1, startRow = 17) %>%
-    filter(Type == "Country/Area") %>%
-    select(country = `Region,.subregion,.country.or.area.*`, `2020`) %>%
-    mutate(`2020` = as.numeric(`2020`) * 1000) %>%
-    mutate(country = recode(country,
+    dplyr::filter(Type == "Country/Area") %>%
+    dplyr::select(country = `Region,.subregion,.country.or.area.*`, `2020`) %>%
+    dplyr::mutate(`2020` = as.numeric(`2020`) * 1000) %>%
+    dplyr::mutate(country = dplyr::recode(country,
                             "Bonaire, Sint Eustatius and Saba" = "Bonaire, Sint Eustatius, and Saba",
                             "Micronesia (Fed. States of)"      = "Micronesia (Federated States of)",
                             "Côte d'Ivoire"                    = "Cote d'Ivoire",
@@ -210,10 +210,10 @@ get_country_populations <- function(){
                             "China, Hong Kong SAR"             = "Hong Kong",
                             "China, Taiwan Province of China"  = "Taiwan",
                             "China, Macao SAR"                 = "Macau")) %>%
-    add_row(country = "Guernsey",         `2020` =  67334)  %>% # CIA
-    add_row(country = "Jersey",           `2020` =  101476) %>%
-    add_row(country = "Pitcairn Islands", `2020` =  50)     %>%
-    add_row(country = "Kosovo",           `2020` =  1935259)
+    dplyr::add_row(country = "Guernsey",         `2020` =  67334)  %>% # CIA
+    dplyr::add_row(country = "Jersey",           `2020` =  101476) %>%
+    dplyr::add_row(country = "Pitcairn Islands", `2020` =  50)     %>%
+    dplyr::add_row(country = "Kosovo",           `2020` =  1935259)
 
   #test <- left_join(who_list, df)
 

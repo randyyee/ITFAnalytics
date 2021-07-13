@@ -18,10 +18,10 @@ plot_epicurve <- function(df, transparent = T){
   region_label <- "WHO Region"
   gtitle       <- "Confirmed COVID-19 cases by week of report and WHO region"
 
-  g <- ggplot2::ggplot(data    = df,
-                        mapping = aes(x    = lubridate::floor_date(date, "week", week_start = 1),
-                                      y    = new_cases,
-                                      fill = region)) +
+  g <- ggplot2::ggplot(data     = df,
+                       mapping = aes(x    = lubridate::floor_date(date, "week", week_start = 1),
+                                     y    = new_cases,
+                                     fill = region)) +
     ggplot2::geom_bar(position = "stack",
                       stat     = "identity",
                       alpha    = 0.9) +
@@ -60,4 +60,67 @@ plot_epicurve <- function(df, transparent = T){
     return(g)
   }
 
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @title plot_epicurve_ind
+#' @description Visualize epi curve by cases and deaths.
+#' Default viz for individual countries.
+#'
+#' @param df A dataframe with the following: country, date, cases and/or deaths
+#'
+#' @param type Default cases.
+#'
+#' @param incidence Default TRUE. Specify inputs are incidence values or not.
+#'
+#' @importFrom magrittr `%>%`
+#'
+#' @export
+
+plot_epicurve_ind <- function(df, type = "cases", incidence = T){
+
+  if(!type %in% c("cases", "deaths")){
+    stop("Wrong Type! You must use either cases or deaths!")
+  }
+
+  if(!incidence %in% c(T, F)){
+    stop("Wrong Incidence! You must use either TRUE or FALSE!")
+  }
+
+  if(incidence == F){
+    df %>%
+      ggplot2::ggplot(aes(x = date, y = if(type == "cases") {cases} else {deaths})) +
+      ggplot2::geom_bar(stat = "identity", alpha = 0.9, fill = if(type == "cases") {"dodgerblue4"} else {"red4"}) +
+      ggplot2::theme_classic() +
+      ggplot2::ylab(if(type == "cases") {"Daily Cases"} else {"Daily Deaths"}) +
+      ggplot2::xlab("Date of Reporting") +
+      ggplot2::scale_x_date(breaks       = c(by = "3 weeks"),
+                            date_labels  = "%d\n%b") +
+      ggplot2::scale_y_continuous(labels = comma) +
+      ggplot2::labs(title    = if(type == "cases") {paste0("COVID-19 Cases: ", unique(df$country))} else {paste0("COVID-19 Deaths:", unique(df$country))},
+                    subtitle = paste0(format(min(as.Date(df$date)), "%B %d, %Y"), " - ", format(max(df$date), "%B %d, %Y"))) +
+      ggplot2::theme(plot.title   = ggplot2::element_text(size = 14, face = "bold"),
+                     axis.text    = ggplot2::element_text(size = 8),
+                     axis.title   = ggplot2::element_text(size = 10),
+                     legend.title = ggplot2::element_text(size = 12, face = "bold"),
+                     legend.text  = ggplot2::element_text(size = 9))
+  } else {
+    df %>%
+      ggplot2::ggplot(aes(x = date, y = if(type == "cases") {cases} else {deaths})) +
+      ggplot2::geom_bar(stat = "identity", alpha = 0.9, fill = if(type == "cases") {"dodgerblue4"} else {"red4"}) +
+      ggplot2::theme_classic() +
+      ggplot2::ylab(if(type == "cases") {"Daily Cases per 100,000 People"} else {"Daily Deaths per 100,000 People"}) +
+      ggplot2::xlab("Date of Reporting") +
+      ggplot2::scale_x_date(breaks       = c(by = "3 weeks"),
+                            date_labels  = "%d\n%b") +
+      ggplot2::scale_y_continuous(labels = comma) +
+      ggplot2::labs(title    = if(type == "cases") {paste0("COVID-19 Cases per 100,000 People: ", unique(df$country))} else {paste0("COVID-19 Deaths per 100,000 People:", unique(df$country))},
+                    subtitle = paste0(format(min(as.Date(df$date)), "%B %d, %Y"), " - ", format(max(df$date), "%B %d, %Y"))) +
+      ggplot2::theme(plot.title   = ggplot2::element_text(size = 14, face = "bold"),
+                     axis.text    = ggplot2::element_text(size = 8),
+                     axis.title   = ggplot2::element_text(size = 10),
+                     legend.title = ggplot2::element_text(size = 12, face = "bold"),
+                     legend.text  = ggplot2::element_text(size = 9))
+  }
 }

@@ -11,4 +11,6 @@ table_10mostcases(df)
 }
 \description{
 Table for displaying top 10's.
+
+Table for displaying top 10's.
 }

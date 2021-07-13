@@ -2,7 +2,7 @@
 
 #' @title map_template
 #' @description Cross-sectional map.
-#' @param df A dataframe with the following: country, geometry, date, value = factor value
+#' @param df A dataframe with the following: country, geometry, date, result = factor value
 #' @param world A dataframe with the following: geometry
 #' @param category_color_labels List of labels that should map to the factor values of the df
 #' @param category_color_values List of color values for mapping the labels. Needs to have the same length as category_color_labels!
@@ -21,8 +21,9 @@ map_template <- function(df, world, category_color_labels, category_color_values
                      aes(geometry = geometry),
                      fill = "grey99",
                      size = 0.3) +
-    ggplot2::geom_sf(aes(geometry = geometry),
-                     fill = value, # Param
+    ggplot2::geom_sf(data = df,
+                     aes(geometry = geometry,
+                         fill = result), # Param
                      size = 0.2) +
     ggplot2::theme_void() +
     ggplot2::scale_fill_manual(values       = category_color_values, # Param
@@ -104,7 +105,7 @@ map_trend <- function(df, world){
 #' @title map_vaccinations
 #' @description Cross-sectional map: People vaccinated per 100 for each country.
 #' @param df A dataframe with the following: region, country, date, percent_change AS 6-level factors (<1 1- <3, 3- <10, 10 -<30, 30+).
-#' Input df SHOULD ONLY HAVE ONE DATE!
+#'
 #' @param world A dataframe with the following: admin, geometry, iso3code
 #' @importFrom magrittr `%>%`
 #'
@@ -112,12 +113,11 @@ map_trend <- function(df, world){
 
 map_vaccinations <- function(df, world){
 
-  if(length(unique(df$date))){
-    warning("Your dataframe has more than 1 date! This is a cross-sectional visualization!")
-  }
+  cat_vals = c("#d4ece8","#a2d9d2", "#1f9fa9", "#005e70", "#27343a")
+  cat_labs = c("<1", "1- <3", "3- <10", "10- <30", "30+")
 
   map_template(df, world, cat_labs, cat_vals) +
-    labs(title    = paste0("People Vaccinated per 100 People, ", format(max_vax_date, "%B %d, %Y")),
+    labs(title    = paste0("People Vaccinated per 100 People, ", format(max(df$date), "%B %d, %Y")),
          subtitle = "Number of people out of 100 who received at least one vaccine dose; does not represent percent of \npopulation fully vaccinated",
          caption  = "Note:
        -Countries in white do not have data reported for total people vaccinated

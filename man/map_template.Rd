@@ -7,7 +7,7 @@
 map_template(df, world, category_color_labels, category_color_values)
 }
 \arguments{
-\item{df}{A dataframe with the following: country, geometry, date, value = factor value}
+\item{df}{A dataframe with the following: country, geometry, date, result = factor value}
 
 \item{world}{A dataframe with the following: geometry}
 
