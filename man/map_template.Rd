@@ -11,7 +11,7 @@ map_template(df, world, category_color_labels, category_color_values)
 
 \item{world}{A dataframe with the following: geometry}
 
-\item{category_color_labels}{List of labels that should map to the factor values of the df}
+\item{category_color_labels}{List of labels that should map to the factor values of the df. Use "None" if no categories.}
 
 \item{category_color_values}{List of color values for mapping the labels. Needs to have the same length as category_color_labels!}
 }

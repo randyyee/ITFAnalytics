@@ -99,7 +99,7 @@ plot_epicurve_ind <- function(df, type = "cases", incidence = T){
                             date_labels  = "%d\n%b") +
       ggplot2::scale_y_continuous(labels = comma) +
       ggplot2::labs(title    = if(type == "cases") {paste0("COVID-19 Cases: ", unique(df$country))} else {paste0("COVID-19 Deaths:", unique(df$country))},
-                    subtitle = paste0(format(min(as.Date(df$date)), "%B %d, %Y"), " - ", format(max(df$date), "%B %d, %Y"))) +
+                    subtitle = paste0(format(min(df$date, na.rm = T), "%B %d, %Y"), " - ", format(max(df$date, na.rm = T), "%B %d, %Y"))) +
       ggplot2::theme(plot.title   = ggplot2::element_text(size = 14, face = "bold"),
                      axis.text    = ggplot2::element_text(size = 8),
                      axis.title   = ggplot2::element_text(size = 10),
@@ -116,11 +116,59 @@ plot_epicurve_ind <- function(df, type = "cases", incidence = T){
                             date_labels  = "%d\n%b") +
       ggplot2::scale_y_continuous(labels = comma) +
       ggplot2::labs(title    = if(type == "cases") {paste0("COVID-19 Cases per 100,000 People: ", unique(df$country))} else {paste0("COVID-19 Deaths per 100,000 People: ", unique(df$country))},
-                    subtitle = paste0(format(min(as.Date(df$date)), "%B %d, %Y"), " - ", format(max(df$date), "%B %d, %Y"))) +
+                    subtitle = paste0(format(min(df$date, na.rm = T), "%B %d, %Y"), " - ", format(max(df$date, na.rm = T), "%B %d, %Y"))) +
       ggplot2::theme(plot.title   = ggplot2::element_text(size = 14, face = "bold"),
                      axis.text    = ggplot2::element_text(size = 8),
                      axis.title   = ggplot2::element_text(size = 10),
                      legend.title = ggplot2::element_text(size = 12, face = "bold"),
                      legend.text  = ggplot2::element_text(size = 9))
   }
+}
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @title plot_epicurve_double
+#' @description Visualize epi curve by cases and deaths.
+#' Default viz for individual countries.
+#'
+#' @param df A dataframe with the following: country, date, cases and deaths
+#'
+#'
+#' @importFrom magrittr `%>%`
+#'
+#' @export
+
+plot_epicurve_double <- function(df){
+
+  ylim.prim <- c(min(df$case, na.rm = T),
+                 max(df$case, na.rm = T))
+
+  ylim.sec  <- c(min(df$death, na.rm = T),
+                 max(df$death, na.rm = T))
+
+  b <- diff(ylim.prim)/diff(ylim.sec)
+  a <- ylim.prim[1] - b * ylim.sec[1]
+
+  ggplot2::ggplot(df) +
+    ggplot2::geom_bar(aes(x = weekdate, y = case, color = "Cases"), stat = "identity", alpha = 0.9, fill = "lightblue") +
+    ggplot2::geom_line(aes(x = weekdate, y = a + death * b, group = 1, color = "Deaths"), size = 1) +
+    ggplot2::scale_color_manual(breaks = c("Cases", "Deaths"),
+                                values = c("lightblue", "red")) +
+    ggplot2::theme_classic() +
+    ggplot2::scale_x_date(breaks       = c(by = "4 weeks"),
+                          date_labels  = "%d\n%b") +
+    ggplot2::scale_y_continuous("Weekly Cases", labels = comma,
+                                sec.axis = sec_axis(~ (. - a)/b, name = "Weekly Deaths", labels = comma)) +
+    ggplot2::xlab("Date of Reporting") +
+    ggplot2::labs(title    = paste0("COVID-19: ", unique(df$country)),
+                  subtitle = paste0(format(min(df$weekdate, na.rm = T), "%B %d, %Y"), " - ", format(max(df$weekdate, na.rm = T), "%B %d, %Y"))) +
+    ggplot2::theme(plot.title      = ggplot2::element_text(size = 14, face = "bold"),
+                   axis.text       = ggplot2::element_text(size = 8),
+                   axis.title      = ggplot2::element_text(size = 10),
+                   legend.position = c(0.95, 0.95),
+                   legend.key      = element_blank(),
+                   legend.title    = ggplot2::element_blank(),
+                   legend.text     = ggplot2::element_text(size = 9))  +
+    ggplot2::guides(color          = ggplot2::guide_legend(override.aes = list(fill = c("lightblue", NA))))
 }
