@@ -44,8 +44,8 @@ plot_epicurve <- function(df, transparent = T){
                   subtitle = paste0(format(min(df$date, na.rm = T), "%B %d, %Y"), " - ",
                                     format(max(df$date, na.rm = T), "%B %d, %Y"))) +
     ggplot2::theme(plot.title   = ggplot2::element_text(size  = 18, face = "bold"),
-                   axis.text    = ggplot2::element_text(size  = 8),
-                   axis.title   = ggplot2::element_text(size  = 10),
+                   axis.text    = ggplot2::element_text(size  = 10),
+                   axis.title   = ggplot2::element_text(size  = 12),
                    legend.title = ggplot2::element_text(size  = 12, face = "bold"),
                    legend.text  = ggplot2::element_text(size  = 9)) +
     ggplot2::guides(fill = ggplot2::guide_legend(overide.aex  = list(size = 9)))
@@ -101,8 +101,8 @@ plot_epicurve_ind <- function(df, type = "cases", incidence = T){
       ggplot2::labs(title    = if(type == "cases") {paste0("COVID-19 Cases: ", unique(df$country))} else {paste0("COVID-19 Deaths:", unique(df$country))},
                     subtitle = paste0(format(min(df$date, na.rm = T), "%B %d, %Y"), " - ", format(max(df$date, na.rm = T), "%B %d, %Y"))) +
       ggplot2::theme(plot.title   = ggplot2::element_text(size = 14, face = "bold"),
-                     axis.text    = ggplot2::element_text(size = 8),
-                     axis.title   = ggplot2::element_text(size = 10),
+                     axis.text    = ggplot2::element_text(size = 10),
+                     axis.title   = ggplot2::element_text(size = 12),
                      legend.title = ggplot2::element_text(size = 12, face = "bold"),
                      legend.text  = ggplot2::element_text(size = 9))
   } else {
