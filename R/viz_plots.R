@@ -163,12 +163,12 @@ plot_epicurve_double <- function(df){
     ggplot2::xlab("Date of Reporting") +
     ggplot2::labs(title    = paste0("COVID-19: ", unique(df$country)),
                   subtitle = paste0("Week of:", format(min(df$weekdate, na.rm = T), "%B %d, %Y"), " - ", format(max(df$weekdate, na.rm = T), "%B %d, %Y"))) +
-    ggplot2::theme(plot.title      = ggplot2::element_text(size = 14, face = "bold"),
-                   axis.text       = ggplot2::element_text(size = 8),
-                   axis.title      = ggplot2::element_text(size = 12),
+    ggplot2::theme(plot.title      = ggplot2::element_text(size = 16, face = "bold"),
+                   axis.text       = ggplot2::element_text(size = 14),
+                   axis.title      = ggplot2::element_text(size = 14),
                    legend.position = "top",
                    legend.key      = element_blank(),
                    legend.title    = ggplot2::element_blank(),
-                   legend.text     = ggplot2::element_text(size = 9))  +
+                   legend.text     = ggplot2::element_text(size = 12))  +
     ggplot2::guides(color          = ggplot2::guide_legend(override.aes = list(fill = c("lightblue", NA))))
 }
