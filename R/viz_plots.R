@@ -162,7 +162,7 @@ plot_epicurve_double <- function(df){
                                 sec.axis = sec_axis(~ (. - a)/b, name = "Weekly Deaths", labels = comma)) +
     ggplot2::xlab("Date of Reporting") +
     ggplot2::labs(title    = paste0("COVID-19: ", unique(df$country)),
-                  subtitle = paste0(format(min(df$weekdate, na.rm = T), "%B %d, %Y"), " - ", format(max(df$weekdate, na.rm = T), "%B %d, %Y"))) +
+                  subtitle = paste0("Week of:", format(min(df$weekdate, na.rm = T), "%B %d, %Y"), " - ", format(max(df$weekdate, na.rm = T), "%B %d, %Y"))) +
     ggplot2::theme(plot.title      = ggplot2::element_text(size = 14, face = "bold"),
                    axis.text       = ggplot2::element_text(size = 8),
                    axis.title      = ggplot2::element_text(size = 10),
