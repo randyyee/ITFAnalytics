@@ -10,7 +10,7 @@
 #'
 #' @export
 
-map_template <- function(df, world, category_color_labels, category_color_values){
+map_template <- function(df, world, category_color_labels = "None", category_color_values){
 
   # if(length(category_color_labels) != length(category_color_values)){
   #   stop("Your category labels are of different lengths!")
