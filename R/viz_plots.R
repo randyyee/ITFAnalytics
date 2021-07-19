@@ -199,13 +199,13 @@ plot_epicurve_double2 <- function(df){
   a <- ylim.prim[1] - b * ylim.sec[1]
 
   ggplot2::ggplot(df) +
-    ggplot2::geom_bar(aes(x = weekdate, y = case, color = "Cases"), stat = "identity", alpha = 0.9, fill = "lightblue") +
-    ggplot2::geom_line(aes(x = weekdate, y = a + death * b, group = 1, color = "Deaths"), size = 1) +
+    ggplot2::geom_bar(aes(x = date, y = case, color = "Cases"), stat = "identity", alpha = 0.9, fill = "lightblue") +
+    ggplot2::geom_line(aes(x = date, y = a + death * b, group = 1, color = "Deaths"), size = 1) +
     ggplot2::scale_color_manual(breaks = c("Cases", "Deaths"),
                                 values = c("lightblue", "red")) +
     ggplot2::theme_classic() +
-    ggplot2::scale_y_continuous("Weekly Cases", labels = comma,
-                                sec.axis = sec_axis(~ (. - a)/b, name = "Weekly Deaths", labels = comma)) +
+    ggplot2::scale_y_continuous("Cases", labels = comma,
+                                sec.axis = sec_axis(~ (. - a)/b, name = "Deaths", labels = comma)) +
     ggplot2::xlab("Date of Reporting") +
     ggplot2::labs(title    = paste0("COVID-19: ", unique(df$country)),
                   subtitle = paste0("Week of:", format(min(df$weekdate, na.rm = T), "%B %d, %Y"), " - ", format(max(df$weekdate, na.rm = T), "%B %d, %Y"))) +
