@@ -15,6 +15,7 @@ table_countriesofconcern <- function(df_risk, df_vaccinations, df_vaccinations_m
   as.data.frame(
     t(
       dplyr::filter(df_risk, country %in% country_list) %>%
+        dplyr::group_by(country) %>%
         dplyr::filter(date == max(date)) %>%
         dplyr::mutate(Country                                   = country,
                       Date                                      = date,
@@ -25,7 +26,7 @@ table_countriesofconcern <- function(df_risk, df_vaccinations, df_vaccinations_m
                       `New Deaths (Incidence per 100,000)`      = paste0(comma(round(new_deaths)), " (", round(week_death_incidence, 2),")"),
                       `7 Day Deaths`                            = scales::comma(round(week_death)),
                       `Previous 7 Day Deaths`                   = scales::comma(round(prev_week_death)),
-                      `% Change in Deaths from Previous 7 Days` = percent(percent_change_death, scale = 1)) %>%
+                      `% Change in Deaths from Previous 7 Days` = scales::percent(percent_change_death, scale = 1)) %>%
         dplyr::select(Country:`% Change in Deaths from Previous 7 Days`) %>%
         dplyr::left_join(
           dplyr::filter(df_vaccinations, location %in% country_list) %>%
@@ -34,6 +35,7 @@ table_countriesofconcern <- function(df_risk, df_vaccinations, df_vaccinations_m
             dplyr::mutate(`Most Recent Date for Vaccinations` = date,
                           `People Vaccinated Per 100 People`  = people_vaccinated_per_hundred,
                           `Total Vaccinations Per 100 People` = total_vaccinations_per_hundred) %>%
+            dplyr::ungroup() %>%
             dplyr::select(location,`Most Recent Date for Vaccinations`:`Total Vaccinations Per 100 People`), by = c("Country" = "location")
         ) %>%
         dplyr::left_join(
