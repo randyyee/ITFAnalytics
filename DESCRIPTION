@@ -18,7 +18,9 @@ Imports:
     lubridate,
     gt,
     scales,
-    openxlsx
+    openxlsx,
+    flextable,
+    tibble
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
