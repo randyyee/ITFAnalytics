@@ -1,12 +1,57 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @title table_10mostcases
-#' @description Table for displaying top 10's.
-#' @param df A dataframe with the following and in this order: country, value1 - cases, value2 - percent change
+#' @title table_countriesofconcern
+#' @description Table for displaying stats for list of countries of concern.
+#' @param df_risk A dataframe with the following: country, date, new_cases, week_case_incidence, week_case, prev_week_case, percent_change_case,
+#' new_deaths, week_death_incidence, week_death, prev_week_death, percent_change_death
+#' @param df_vaccinations A dataframe with the following: location, date, people_vaccinated_per_hundred, total_vaccinations_per_hundred
+#' @param df_manufacturers A dataframe with the following: location, date, vaccines
 #' @importFrom magrittr `%>%`
 #'
 #' @export
 
+table_countriesofconcern <- function(df_risk, df_vaccinations, df_vaccinations_maufacturers, country_list){
+
+  as.data.frame(
+    t(
+      dplyr::filter(df_risk, country %in% country_list) %>%
+        dplyr::filter(date == max(date)) %>%
+        dplyr::mutate(Country                                   = country,
+                      Date                                      = date,
+                      `New Cases (Incidence per 100,000)`       = paste0(comma(round(new_cases)), " (", round(week_case_incidence, 2),")"),
+                      `7 Day Cases`                             = scales::comma(round(week_case)),
+                      `Previous 7 Day Cases`                    = scales::comma(round(prev_week_case)),
+                      `% Change in Cases from Previous 7 Days`  = scales::percent(percent_change_case, scale = 1),
+                      `New Deaths (Incidence per 100,000)`      = paste0(comma(round(new_deaths)), " (", round(week_death_incidence, 2),")"),
+                      `7 Day Deaths`                            = scales::comma(round(week_death)),
+                      `Previous 7 Day Deaths`                   = scales::comma(round(prev_week_death)),
+                      `% Change in Deaths from Previous 7 Days` = percent(percent_change_death, scale = 1)) %>%
+        dplyr::select(Country:`% Change in Deaths from Previous 7 Days`) %>%
+        dplyr::left_join(
+          dplyr::filter(df_vaccinations, location %in% country_list) %>%
+            dplyr::group_by(location) %>%
+            dplyr::filter(date == max(date)) %>%
+            dplyr::mutate(`Most Recent Date for Vaccinations` = date,
+                          `People Vaccinated Per 100 People`  = people_vaccinated_per_hundred,
+                          `Total Vaccinations Per 100 People` = total_vaccinations_per_hundred) %>%
+            dplyr::select(location,`Most Recent Date for Vaccinations`:`Total Vaccinations Per 100 People`), by = c("Country" = "location")
+        ) %>%
+        dplyr::left_join(
+          dplyr::filter(df_vaccinations_maufacturers, location %in% country_list) %>%
+            dplyr::group_by(location) %>%
+            dplyr::filter(last_observation_date == max(last_observation_date)) %>%
+            dplyr::mutate(`Vaccines in Use` = vaccines,
+                          `% Delta` = "",
+                          `Variant Comments` = "") %>%
+            dplyr::select(location, `Vaccines in Use`, `% Delta`, `Variant Comments`), by = c("Country" = "location")
+        )
+    ))  %>%
+    tibble::rownames_to_column(" ") %>%
+    purr::set_names(.[1,]) %>%
+    dplyr::filter(Country != "Country") %>%
+    flextable::flextable()
+
+}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

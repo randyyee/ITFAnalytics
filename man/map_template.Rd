@@ -4,7 +4,7 @@
 \alias{map_template}
 \title{map_template}
 \usage{
-map_template(df, world, category_color_labels, category_color_values)
+map_template(df, world, category_color_labels = "None", category_color_values)
 }
 \arguments{
 \item{df}{A dataframe with the following: country, geometry, date, result = factor value}
