@@ -1,7 +1,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title plot_epicurve
-#' @description Visualize epi curve by epi-weeks (Monday-Sunday).
+#' @description (EPI WEEK) Visualize epi curve by epi-weeks (Monday-Sunday).
 #' Default viz for WHO regions.
 #' @param df A dataframe with the following: region, country, date, new_cases.
 #' For WHO default, region should be factors with levels of AMRO, EURO, SEARO, EMRO, AFRO, and WPRO.
@@ -65,7 +65,7 @@ plot_epicurve <- function(df, transparent = T){
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title plot_epicurve_ind
-#' @description Visualize epi curve by cases and deaths.
+#' @description (DAILY) Visualize epi curve by cases and deaths.
 #' Default viz for individual countries.
 #'
 #' @param df A dataframe with the following: country, date, cases and/or deaths
@@ -129,10 +129,10 @@ plot_epicurve_ind <- function(df, type = "cases", incidence = T){
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title plot_epicurve_double
-#' @description Visualize epi curve by cases and deaths.
+#' @description (EPI WEEK) Visualize epi curve by cases and deaths.
 #' Default viz for individual countries.
 #'
-#' @param df A dataframe with the following: country, date, cases and deaths
+#' @param df A dataframe with the following: country, weekdate, cases and deaths
 #'
 #'
 #' @importFrom magrittr `%>%`
@@ -177,7 +177,7 @@ plot_epicurve_double <- function(df){
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title plot_epicurve_double2
-#' @description Visualize epi curve by cases and deaths.
+#' @description (DAILY) Visualize epi curve by cases and deaths.
 #' Default viz for individual countries.
 #'
 #' @param df A dataframe with the following: country, date, cases and deaths
