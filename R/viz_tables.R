@@ -47,7 +47,7 @@ table_countriesofconcern <- function(df_risk, df_vaccinations, df_vaccinations_m
         )
     ))  %>%
     tibble::rownames_to_column(" ") %>%
-    purr::set_names(.[1,]) %>%
+    purrr::set_names(.[1,]) %>%
     dplyr::filter(Country != "Country") %>%
     flextable::flextable()
 
