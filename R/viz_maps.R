@@ -139,8 +139,9 @@ map_trend <- function(df, world){
 #'
 #' @export
 
-map_vaccinations <- function(df, world){
+map_vaccinations <- function(df, world, type = "People"){
 
+  if(type == "People"){
   cat_vals = c("#d4ece8","#a2d9d2", "#1f9fa9", "#005e70", "#27343a")
   cat_labs = c("<1", "1- <3", "3- <10", "10- <30", "30+")
 
@@ -150,4 +151,18 @@ map_vaccinations <- function(df, world){
          caption  = "Note:
        -Countries in white do not have data reported for total people vaccinated
        -Vaccine data are incomplete and data may be out of date")
+  }
+
+  if(type == "Fully"){
+    cat_vals = c("#CCEC6","#99D8C9", "#66C2A4", "#2CA25F", "#006D2C")
+    cat_labs = c("<1", "1- <3", "3- <10", "10- <30", "30+")
+
+    map_template(df, world, cat_labs, cat_vals) +
+      labs(title    = paste0("People Fully Vaccinated per 100 People, ", format(max(df$date), "%B %d, %Y")),
+           subtitle = "Represents percent of population fully vaccinated",
+           caption  = "Note:
+       -Countries in white do not have data reported for fully vaccinated
+       -Vaccine data are incomplete and data may be out of date")
+  }
+
 }

@@ -14,6 +14,6 @@ Produces an epi curve, region stacked bar plot for each epi-week (Monday-Sunday)
 \item{transparent}{Default TRUE - returns a transparent plot.}
 }
 \description{
-Visualize epi curve by epi-weeks (Monday-Sunday).
+(EPI WEEK) Visualize epi curve by epi-weeks (Monday-Sunday).
 Default viz for WHO regions.
 }

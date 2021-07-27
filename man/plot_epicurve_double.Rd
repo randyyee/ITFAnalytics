@@ -7,9 +7,9 @@
 plot_epicurve_double(df)
 }
 \arguments{
-\item{df}{A dataframe with the following: country, date, cases and deaths}
+\item{df}{A dataframe with the following: country, weekdate, cases and deaths}
 }
 \description{
-Visualize epi curve by cases and deaths.
+(EPI WEEK) Visualize epi curve by cases and deaths.
 Default viz for individual countries.
 }

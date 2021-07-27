@@ -10,6 +10,6 @@ plot_epicurve_double2(df)
 \item{df}{A dataframe with the following: country, date, cases and deaths}
 }
 \description{
-Visualize epi curve by cases and deaths.
+(DAILY) Visualize epi curve by cases and deaths.
 Default viz for individual countries.
 }

@@ -165,7 +165,7 @@ get_country_coords <- function(world = file.choose()){
     dplyr::select(TYPE, ADMIN, ISO_A3) %>%
     dplyr::mutate(iso3code = passport::parse_country(ADMIN, to="iso3c")) %>%
     dplyr::mutate(iso3code = dplyr::if_else(ADMIN == "eSwatini","SWZ",iso3code)) %>%
-    dplyr::mutate(iso3code = dplyr::if_else(ADMIN == "Kosovo","XKX",iso3code)) %>%
+    dplyr::mutate(iso3code = dplyr::if_else(ADMIN == "Kosovo", "XKX", iso3code)) %>%
     dplyr::filter(!iso3code == "ATA" & !iso3code == 'FJI') %>% #remove Antarctica and Fiji
     dplyr::filter(!ADMIN == 'Northern Cyprus') #remove Northern Cyprus
 
@@ -211,9 +211,9 @@ get_country_populations <- function(){
                             "China, Taiwan Province of China"  = "Taiwan",
                             "China, Macao SAR"                 = "Macau")) %>%
     dplyr::add_row(country = "Guernsey",         `2020` =  67334)  %>% # CIA
-    dplyr::add_row(country = "Jersey",           `2020` =  101476) %>%
-    dplyr::add_row(country = "Pitcairn Islands", `2020` =  50)     %>%
-    dplyr::add_row(country = "Kosovo",           `2020` =  1935259)
+    dplyr::add_row(country = "Jersey",           `2020` =  101476) %>% # CIA
+    dplyr::add_row(country = "Pitcairn Islands", `2020` =  50)     %>% # CIA
+    dplyr::add_row(country = "Kosovo",           `2020` =  1935259) # CIA
 
   #test <- left_join(who_list, df)
 

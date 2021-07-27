@@ -14,6 +14,6 @@ plot_epicurve_ind(df, type = "cases", incidence = T)
 \item{incidence}{Default TRUE. Specify inputs are incidence values or not.}
 }
 \description{
-Visualize epi curve by cases and deaths.
+(DAILY) Visualize epi curve by cases and deaths.
 Default viz for individual countries.
 }
