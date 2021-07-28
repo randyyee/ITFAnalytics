@@ -131,7 +131,7 @@ map_trend <- function(df, world){
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title map_vaccinations
-#' @description Cross-sectional map: People vaccinated per 100 for each country.
+#' @description Cross-sectional map: People vaccinated per 100 for each country or Fully vaccinated.
 #' @param df A dataframe with the following: region, country, date, percent_change AS 6-level factors (<1 1- <3, 3- <10, 10 -<30, 30+).
 #'
 #' @param world A dataframe with the following: admin, geometry, iso3code
@@ -154,7 +154,7 @@ map_vaccinations <- function(df, world, type = "People"){
   }
 
   if(type == "Fully"){
-    cat_vals = c("#CCEC6","#99D8C9", "#66C2A4", "#2CA25F", "#006D2C")
+    cat_vals = c("#CCECE6","#99D8C9", "#66C2A4", "#2CA25F", "#006D2C")
     cat_labs = c("<1", "1- <3", "3- <10", "10- <30", "30+")
 
     map_template(df, world, cat_labs, cat_vals) +
