@@ -1,16 +1,15 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title map_template
-#' @description Cross-sectional map.
+#' @description Cross-sectional map. Uses the stored country_coords data as the base map.
 #' @param df A dataframe with the following: country, geometry, date, result = factor value
-#' @param world A dataframe with the following: geometry
 #' @param category_color_labels List of labels that should map to the factor values of the df. Use "None" if no categories.
 #' @param category_color_values List of color values for mapping the labels. Needs to have the same length as category_color_labels!
 #' @importFrom magrittr `%>%`
-#'
+#' @import sf
 #' @export
 
-map_template <- function(df, world, category_color_labels = "None", category_color_values){
+map_template <- function(df, category_color_labels = "None", category_color_values){
 
   # if(length(category_color_labels) != length(category_color_values)){
   #   stop("Your category labels are of different lengths!")
@@ -19,7 +18,7 @@ map_template <- function(df, world, category_color_labels = "None", category_col
   if(category_color_labels == "None")
   {
     ggplot2::ggplot(df) + # Param
-      ggplot2::geom_sf(data = world, # Param
+      ggplot2::geom_sf(data = country_coords, # Param
                        aes(geometry = geometry),
                        fill = "grey99",
                        size = 0.3) +
@@ -45,7 +44,7 @@ map_template <- function(df, world, category_color_labels = "None", category_col
   }
 
   ggplot2::ggplot(df) + # Param
-    ggplot2::geom_sf(data = world, # Param
+    ggplot2::geom_sf(data = country_coords, # Param
                      aes(geometry = geometry),
                      fill = "grey99",
                      size = 0.3) +
@@ -80,24 +79,43 @@ map_template <- function(df, world, category_color_labels = "None", category_col
 #' @param df A dataframe with the following: region, country, date, incidence as 4-level factors (0- <1, 1- <10, 10- <25, 25+)
 #' Produces an epi curve, region stacked bar plot for each epi-week (Monday-Sunday).
 #' Input df SHOULD ONLY HAVE ONE DATE!
-#' @param world Basemap, a dataframe with the following: admin, geometry, iso3code
 #' @importFrom magrittr `%>%`
 #'
 #' @export
 
-map_burden <- function(df, world){
+map_burden <- function(df){
 
   if(length(unique(df$date)) > 1){
     warning("Your dataframe has more than 1 date! This is a cross-sectional visualization!")
   }
 
+  if(length(unique(df$who_region)) == 1){
+    if (df$who_region == "EURO"){
+      bbox <- sf::st_bbox(c(xmin = -2500000, ymin = 2000000, xmax = 7000000, ymax = 8500000))
+    } else if (df$who_region == "AMRO") {
+      bbox <- sf::st_bbox(c(xmin=-10775454, ymin=-5900074, xmax=-3072374, ymax=5318372))
+    } else if (df$who_region == "SEARO") {
+      bbox <- sf::st_bbox(c(xmin=6284395, ymin=-1808021, xmax=13315540, ymax=3796098))
+    } else if (df$who_region == "EMRO"){
+      bbox <- sf::st_bbox(c(xmin=-2500688.1, ymin=-850026.8, xmax=6918436.7, ymax=6245846.3))
+    } else if (df$who_region == "AFRO"){
+      bbox <- sf::st_bbox(c(xmin=-1800000, ymin=-3900074, xmax=4700000, ymax=4018372))
+    } else {
+      bbox <- sf::st_bbox(sf::st_as_sf(df))
+    }
+  } else {
+    bbox <- sf::st_bbox(sf::st_as_sf(df))
+  }
+
   cat_labs <- c("0- <1", "1- <10", "10- <25", "25+")
   cat_vals <- c("#f1e5a1", "#e7b351", "#d26230", "#aa001e")
 
-  map_template(df, world, cat_labs, cat_vals) +
-    ggplot2::labs(fill = "Average Daily \nIncidence \n(past 7 days) \nper 100,000") +
+  map_template(df, cat_labs, cat_vals) +
+    ggplot2::coord_sf(xlim = bbox[c(1, 3)],
+                      ylim = bbox[c(2, 4)]) +
+    ggplot2::labs(fill = "Average \nDaily \nIncidence \n(past 7 days) \nper 100,000") +
     ggplot2::labs(title = "Burden",
-                  subtitle = paste0("Average daily incidence over the past 7 days per 100,000 population, ", format(max(df$date), "%B %d, %Y")))
+                  subtitle = paste0("Average daily incidence over the past 7 days per 100,000 \npopulation ", format(max(df$date), "%B %d, %Y")))
 }
 
 
@@ -107,24 +125,43 @@ map_burden <- function(df, world){
 #' @description Cross-sectional map: Average daily incidence for the past 7 days for each country.
 #' @param df A dataframe with the following: region, country, date, percent_change as 6-level factors (0- <1, 1- <10, 10- <25, 25+).
 #' Input df SHOULD ONLY HAVE ONE DATE!
-#' @param world A dataframe with the following: admin, geometry, iso3code
 #' @importFrom magrittr `%>%`
 #'
 #' @export
 
-map_trend <- function(df, world){
+map_trend <- function(df){
 
   if(length(unique(df$date)) > 1){
     warning("Your dataframe has more than 1 date! This is a cross-sectional visualization!")
   }
 
+  if(length(unique(df$who_region)) == 1){
+    if (df$who_region == "EURO"){
+      bbox <- sf::st_bbox(c(xmin = -2500000, ymin = 2000000, xmax = 7000000, ymax = 8500000))
+    } else if (df$who_region == "AMRO") {
+      bbox <- sf::st_bbox(c(xmin=-10775454, ymin=-5900074, xmax=-3072374, ymax=5318372))
+    } else if (df$who_region == "SEARO") {
+      bbox <- sf::st_bbox(c(xmin=6284395, ymin=-1808021, xmax=13315540, ymax=3796098))
+    } else if (df$who_region == "EMRO"){
+      bbox <- sf::st_bbox(c(xmin=-2500688.1, ymin=-850026.8, xmax=6918436.7, ymax=6245846.3))
+    } else if (df$who_region == "AFRO"){
+      bbox <- sf::st_bbox(c(xmin=-1800000, ymin=-3900074, xmax=4700000, ymax=4018372))
+    } else {
+      bbox <- sf::st_bbox(sf::st_as_sf(df))
+    }
+  } else {
+    bbox <- sf::st_bbox(sf::st_as_sf(df))
+  }
+
   cat_labs <- c(">=50% decrease", "0 - <50% decrease", ">0 - <=50% increase", ">50 - <=100% increase", ">100 - <=200% increase", ">200% increase")
   cat_vals <- c("#1f9fa9", "#c0ebec", "#e57e51", "#d26230", "#c92929", "#7c0316")
 
-  map_template(df, world, cat_labs, cat_vals) +
+  map_template(df, cat_labs, cat_vals) +
+    ggplot2::coord_sf(xlim = bbox[c(1, 3)],
+                      ylim = bbox[c(2, 4)]) +
     ggplot2::labs(fill = "Percent \nChange From \nPrevious Week")+
     ggplot2::labs(title = "Recent Trends",
-                  subtitle = paste0("Percent change in cases from 7-day period ending ", format((unique(df$date)), "%B %d, %Y"), '\ncompared to previous 7-day period ending ', format(max(who_long1$Date)-7, "%B %d, %Y")))
+                  subtitle = paste0("Percent change in cases from 7-day period ending ", format((unique(df$date)), "%B %d, %Y"), '\ncompared to previous 7-day period ending ', format(max(df$date)-7, "%B %d, %Y")))
 }
 
 
@@ -133,19 +170,17 @@ map_trend <- function(df, world){
 #' @title map_vaccinations
 #' @description Cross-sectional map: People vaccinated per 100 for each country or Fully vaccinated.
 #' @param df A dataframe with the following: region, country, date, percent_change AS 6-level factors (<1 1- <3, 3- <10, 10 -<30, 30+).
-#'
-#' @param world A dataframe with the following: admin, geometry, iso3code
 #' @importFrom magrittr `%>%`
 #'
 #' @export
 
-map_vaccinations <- function(df, world, type = "People"){
+map_vaccinations <- function(df, type = "People"){
 
   if(type == "People"){
   cat_vals = c("#d4ece8","#a2d9d2", "#1f9fa9", "#005e70", "#27343a")
   cat_labs = c("<1", "1- <3", "3- <10", "10- <30", "30+")
 
-  map_template(df, world, cat_labs, cat_vals) +
+  map_template(df, country_coords, cat_labs, cat_vals) +
     labs(title    = paste0("People Vaccinated per 100 People, ", format(max(df$date), "%B %d, %Y")),
          subtitle = "Number of people out of 100 who received at least one vaccine dose; does not represent percent of \npopulation fully vaccinated",
          caption  = "Note:
@@ -157,7 +192,7 @@ map_vaccinations <- function(df, world, type = "People"){
     cat_vals = c("#CCECE6","#99D8C9", "#66C2A4", "#2CA25F", "#006D2C")
     cat_labs = c("<1", "1- <3", "3- <10", "10- <30", "30+")
 
-    map_template(df, world, cat_labs, cat_vals) +
+    map_template(df, country_coords, cat_labs, cat_vals) +
       labs(title    = paste0("People Fully Vaccinated per 100 People, ", format(max(df$date), "%B %d, %Y")),
            subtitle = "Represents percent of population fully vaccinated",
            caption  = "Note:

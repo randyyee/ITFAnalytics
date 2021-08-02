@@ -64,25 +64,32 @@ table_countriesofconcern <- function(df_risk, df_vaccinations, df_vaccinations_m
 #'
 #' @export
 
-table_10mostcases <- function(df){
-  gt(df) %>%
-    gt::tab_header(title        = gt::html(paste0("<b>10 Countries/ Areas with Most New Cases", "</b>"))) %>%
-    gt::data_color(columns      = vars(value2),
+table_10mostcases <- function(df, type = "Global", run_date = "Enter a date"){
+
+  if(type == "Global"){
+    title_label <-  gt::html(paste0("<b>10 Countries/ Areas with Most \nNew Cases", "</b>"))
+  } else {
+    title_label <- gt::html(paste0("<b>10 (", type, ") Countries/ Areas with Most \nNew Cases", "</b>"))
+  }
+
+  gt::gt(df) %>%
+    gt::tab_header(title        = title_label) %>%
+    gt::data_color(columns      = c(value2),
                    colors       = scales::col_bin(
                      palette    = c("#1f9fa9", "#c0ebec", "#e57e51", "#d26230", "#c92929", "#7c0316"),
                      bins       = c(-Inf, -50, 0, 50, 100, 200, Inf))) %>%
-    gt::fmt_number(columns      = vars(value1),
+    gt::fmt_number(columns      = c(value1),
                    sep_mark     = ",",
                    decimals     = 0)  %>%
-    gt::fmt_number(columns      = vars(value2),
+    gt::fmt_number(columns      = c(value2),
                    decimals     = 1) %>%
     gt::cols_label(country = gt::html("Country/ Area"),
                    value1  = gt::html("New Cases<br>This Week"),
                    value2  = gt::html("% Change<br>Last Week")) %>%
     gt::cols_align("center") %>%
-    gt::cols_width(vars(country) ~ gt::px(175),
-                   vars(value1)  ~ gt::px(100),
-                   vars(value2)  ~ gt::px(100)) %>%
+    gt::cols_width(c(country) ~ gt::px(175),
+                   c(value1)  ~ gt::px(100),
+                   c(value2)  ~ gt::px(100)) %>%
     gt::tab_options(table.width               = gt::px(400),
                     column_labels.font.weight = "bold",
                     table.font.weight         = "bold",
@@ -91,9 +98,9 @@ table_10mostcases <- function(df){
                     source_notes.padding      = 0,
                     footnotes.padding         = 0) %>%
     gt::tab_source_note(source_note = gt::md("Data Source: WHO Coronavirus Disease (COVID-19) Dashboard ")) %>%
-    gt::tab_source_note(source_note = paste0("Data as of ", format(max(df$date), "%B %d, %Y"))) %>%
+    gt::tab_source_note(source_note = paste0("Data as of ", run_date)) %>%
     gt::tab_footnote(footnote       = "Percent change in cases of most recent 7 days to 7 days prior",
-                     locations      = cells_column_labels(columns = vars(value2)))
+                     locations      = gt::cells_column_labels(columns = c(value2)))
 }
 
 
@@ -107,8 +114,15 @@ table_10mostcases <- function(df){
 #' @export
 
 table_10incidence <- function(df){
-  gt(df) %>%
-    gt::tab_header(title   = gt::html(paste0("<b>10 Countries/ Areas with Highest Incidence", "</b>"))) %>%
+
+  if(length(unique(df$region)) > 1){
+    title_label <-  gt::html(paste0("<b>10 Countries/ Areas with Highest Incidence", "</b>"))
+  } else {
+    title_label <- gt::html(paste0("<b>10 (", unique(df$region), ") Countries/ Areas with Highest Incidence", "</b>"))
+  }
+
+  gt::gt(df) %>%
+    gt::tab_header(title   = title_label) %>%
     gt::data_color(columns = vars(value2),
                    colors  = scales::col_bin(palette = c("#1f9fa9", "#c0ebec", "#e57e51", "#d26230", "#c92929", "#7c0316"),
                                              bins    = c(-Inf, -50, 0, 50, 100, 200, Inf))) %>%

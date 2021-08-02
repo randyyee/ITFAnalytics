@@ -10,7 +10,6 @@ Imports:
     tidyverse,
     maps,
     passport,
-    EpiEstim,
     zoo,
     readr,
     data.table,
@@ -21,7 +20,9 @@ Imports:
     openxlsx,
     flextable,
     tibble,
-    jsonlite
+    jsonlite,
+    httr,
+    sf
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

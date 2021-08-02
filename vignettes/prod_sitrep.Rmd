@@ -15,20 +15,21 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "C:/Users/pcx5/Desktop/Sitrep")
+
 library(ITFAnalytics)
 library(tidyverse)
+library(gt)
+
+sunday_date <-  Sys.Date()-8
 ```
 
 Epicurves (Global and Regional)
 
 ```{r}
 df <- onetable %>%
-  dplyr::left_join(
-    get_covid_df() %>%
-      dplyr::select(-who_region), 
-    by = c("iso2code" = "country_code")
-    ) %>%
+  left_join(get_covid_df() %>% select(-who_region), 
+            by = c("iso2code" = "country_code")) %>%
   calc_add_risk()
 
 ```
@@ -36,25 +37,65 @@ df <- onetable %>%
 ```{r}
 # Global
 plot_epicurve(filter(df, !is.na(who_region) & source == "WHO"), transparent = F) %>%
-  ggsave(filename = "C://Users/lanak/Desktop/epi_curve_transparent_who.png", width = 13, height = 7, units = "in", bg = "transparent")
+  ggsave(filename = "epi_curve_transparent_who.png", width = 13, height = 7, units = "in", bg = "transparent")
 
 plot_epicurve(filter(df, !is.na(who_region)  & source == "WHO"))%>%
-  ggsave(filename = "C://Users/lanak/Desktop/epi_curve_who.png", width = 13, height = 7, units = "in")
+  ggsave(filename = "epi_curve_who.png", width = 13, height = 7, units = "in")
 
 #Regions
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   plot_epicurve(filter(df, !is.na(who_region) & who_region == r), transparent = F) %>%
-    ggsave(filename = paste0("C://Users/lanak/Desktop/epi_curve_", Sys.Date(), "_", r, ".png"), width = 9, height = 2.5, units = "in", bg = "transparent")
+    ggsave(filename = paste0("epi_curve_", Sys.Date(), "_", r, ".png"), width = 9, height = 2.5, units = "in", bg = "transparent")
 }
 
 ```
 
 ```{r}
-map_burden(
-  df %>%
-    mutate(result = cut(week_case_incidence, breaks = c(-0.1, 1, 10, 25, Inf))) %>%
-    filter(date == Sys.Date()-8),
-  country_coords
-  )
+map_burden(df %>%
+             mutate(result = cut(week_case_incidence, breaks = c(-0.1, 1, 10, 25, Inf))) %>%
+             filter(date == sunday_date)) %>%
+  ggsave(filename = paste0("epi_curve_", Sys.Date(), "_", r, ".png"), width = 9, height = 2.5, units = "in", bg = "transparent")
+
+for (r in unique(filter(df, !is.na(who_region))$who_region)){
+  map_burden(df %>%
+               filter(date == sunday_date) %>%
+               filter(!is.na(who_region) & who_region == r) %>%
+               mutate(result = cut(week_case_incidence, breaks = c(-0.1, 1, 10, 25, Inf)))) %>%
+    ggsave(filename = paste0("burdenmap_", Sys.Date(), "_", r, ".png"), width = 6, height = 6, units = "in", bg = "white")
+}
 
 ```
+```{r}
+map_trend(df %>%
+            mutate(result = cut(percent_change_case, breaks = c(-Inf, -50, 0, 50, 100, 200, Inf))) %>%
+            filter(date == sunday_date)) %>%
+  ggsave(filename = paste0("percent_change_who_", Sys.Date(), ".png"), width = 7.5, height = 4.2, units = "in", bg = "white")
+
+for (r in unique(filter(df, !is.na(who_region))$who_region)){
+  map_trend(df %>%
+               filter(date == sunday_date) %>%
+               filter(!is.na(who_region) & who_region == r) %>%
+               mutate(result = cut(percent_change_case, breaks = c(-Inf, -50, 0, 50, 100, 200, Inf)))) %>%
+    ggsave(filename = paste0("percent_change_who_", Sys.Date(), "_", r, ".png"), width = 6, height = 6, units = "in", bg = "white")
+}
+```
+```{r}
+df %>%
+  filter(date == sunday_date) %>%
+  select(country = who_country, value1 = week_case, value2 = percent_change_case) %>%
+  arrange (desc(value1)) %>%
+  head(10) %>%
+  table_10mostcases(., run_date = format(sunday_date, "%B %d, %Y")) %>%
+  gtsave(filename =  paste0("pct_chng_table_output_who_t3", sunday_date, ".png"), vwidth=650)
+
+for (r in unique(filter(df, !is.na(who_region))$who_region)){
+  df %>%
+    filter(date == sunday_date) %>%
+    select(country = who_country, value1 = week_case, value2 = percent_change_case) %>%
+    arrange (desc(value1)) %>%
+    head(10) %>%
+    table_10mostcases(., type = r, run_date = format(sunday_date, "%B %d, %Y"))%>%
+  gtsave(filename =  paste0('_wkcase_table_', Sys.Date(), "_", r, ".png"), vwidth=650)
+}
+```
+

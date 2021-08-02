@@ -24,13 +24,13 @@ plot_epicurve <- function(df, region = "Global", transparent = T){
   if(length(unique(df$region)) > 1){
     regions      <- col_master$names
     pallete      <- col_master$who.col.pal
-    title        <- "Confirmed COVID-19 Cases by Week of Report and WHO Region"
+    gtitle        <- "Confirmed COVID-19 Cases by Week of Report and WHO Region"
     region_label <- "WHO Region"
     legend       <- "right"
   } else {
     regions      <- col_master[region_abbv == as.character(unique(df$who_region)), ]$names
     pallete      <- col_master[region_abbv == as.character(unique(df$who_region)), ]$who.col.pal
-    gtitle       <- col_master[region_abbv == as.character(unique(df$who_region)), ]$names
+    gtitle       <- paste0("Confirmed COVID-19 Cases – ", r, " Region")
     region_label <- ""
     legend       <- "none"
   }

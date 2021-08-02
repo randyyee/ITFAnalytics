@@ -86,3 +86,39 @@ get_onetable <- function(country_geometries = country_coords){
 
   df_meta <- dplyr::select(df_meta, id, iso2code, who_region, who_country, incomelevel_value, population = `2020`, eighteenplus = `18+`, geometry)
 }
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @title get_country_coords
+#' @description Add dates to country data
+#' @param world User prompt to import shapefile.
+#' Output is available through the package as "country_coords," but this function can be used to recreate this dataset.
+#' To regenerate and make the data available again for the package, run the following in dev and rebuild package:
+#' 1. country_coords <- get_country_coords()
+#' 2. usethis::use_data(country_coords, overwrite=T)
+#'
+#' @importFrom magrittr `%>%`
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' country_coords <- get_country_coords()}
+#'
+
+get_country_coords <- function(world = file.choose()){
+
+  df <- rgdal::readOGR(world) %>%
+    sp::spTransform(sp::CRS("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")) %>%
+    sf::st_as_sf() %>%
+    dplyr::select(TYPE, ADMIN, ISO_A3) %>%
+    dplyr::mutate(iso3code = passport::parse_country(ADMIN, to="iso3c")) %>%
+    dplyr::mutate(iso3code = dplyr::if_else(ADMIN == "eSwatini","SWZ",iso3code)) %>%
+    dplyr::mutate(iso3code = dplyr::if_else(ADMIN == "Kosovo", "XKX", iso3code)) %>%
+    dplyr::filter(!iso3code == "ATA" & !iso3code == 'FJI') %>% #remove Antarctica and Fiji
+    dplyr::filter(!ADMIN == 'Northern Cyprus') #remove Northern Cyprus
+
+  return(df)
+}
+
