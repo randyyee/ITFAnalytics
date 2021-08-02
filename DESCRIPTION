@@ -22,8 +22,14 @@ Imports:
     tibble,
     jsonlite,
     httr,
+<<<<<<< HEAD
     webshot,
     sf
+=======
+    sf,
+    webshot,
+    phantomjs
+>>>>>>> cf74fde4b7f26bc2c1a1aa80f8bab1a42c7537b8
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
