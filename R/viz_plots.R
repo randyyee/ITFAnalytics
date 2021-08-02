@@ -24,13 +24,18 @@ plot_epicurve <- function(df, region = "Global", transparent = T){
   if(length(unique(df$region)) > 1){
     regions      <- col_master$names
     pallete      <- col_master$who.col.pal
+    title        <- "Confirmed COVID-19 Cases by Week of Report and WHO Region"
+    region_label <- "WHO Region"
+    legend       <- "right"
   } else {
     regions      <- col_master[region_abbv == as.character(unique(df$who_region)), ]$names
     pallete      <- col_master[region_abbv == as.character(unique(df$who_region)), ]$who.col.pal
+    gtitle       <- col_master[region_abbv == as.character(unique(df$who_region)), ]$names
+    region_label <- ""
+    legend       <- "none"
   }
 
   region_label <- "WHO Region"
-  gtitle       <- "Confirmed COVID-19 Cases by Week of Report and WHO Region"
 
   g <- ggplot2::ggplot(data     = df,
                        mapping = aes(x    = lubridate::floor_date(date, "week", week_start = 1),
@@ -57,11 +62,12 @@ plot_epicurve <- function(df, region = "Global", transparent = T){
     ggplot2::labs(title    = gtitle,
                   subtitle = paste0(format(min(df$date, na.rm = T), "%B %d, %Y"), " - ",
                                     format(max(df$date, na.rm = T), "%B %d, %Y"))) +
-    ggplot2::theme(plot.title   = ggplot2::element_text(size  = 18, face = "bold"),
-                   axis.text    = ggplot2::element_text(size  = 10),
-                   axis.title   = ggplot2::element_text(size  = 12),
-                   legend.title = ggplot2::element_text(size  = 12, face = "bold"),
-                   legend.text  = ggplot2::element_text(size  = 9)) +
+    ggplot2::theme(plot.title      = ggplot2::element_text(size  = 18, face = "bold"),
+                   axis.text       = ggplot2::element_text(size  = 10),
+                   axis.title      = ggplot2::element_text(size  = 12),
+                   legend.title    = ggplot2::element_text(size  = 12, face = "bold"),
+                   legend.text     = ggplot2::element_text(size  = 9),
+                   legend.position = legend) +
     ggplot2::guides(fill = ggplot2::guide_legend(overide.aex  = list(size = 9)))
 
   if(transparent == T){
