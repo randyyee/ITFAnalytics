@@ -16,5 +16,5 @@ To regenerate and make the data available again for the package, run the followi
 }
 \examples{
 \dontrun{
-get_country_populations <- get_country_populations()}
+country_populations <- get_country_populations()}
 }

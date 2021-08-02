@@ -4,7 +4,7 @@
 \alias{plot_epicurve}
 \title{plot_epicurve}
 \usage{
-plot_epicurve(df, transparent = T)
+plot_epicurve(df, region = "Global", transparent = T)
 }
 \arguments{
 \item{df}{A dataframe with the following: region, country, date, new_cases.
@@ -12,8 +12,11 @@ For WHO default, region should be factors with levels of AMRO, EURO, SEARO, EMRO
 Produces an epi curve, region stacked bar plot for each epi-week (Monday-Sunday).}
 
 \item{transparent}{Default TRUE - returns a transparent plot.}
+
+\item{who.col.pal}{Default color pallet for all regions. Specify specific region color for individual region.}
+
+\item{regions}{Default all WHO regions. Specify specific region label for individual region.}
 }
 \description{
-(EPI WEEK) Visualize epi curve by epi-weeks (Monday-Sunday).
-Default viz for WHO regions.
+(EPI WEEK) Visualize epi curve by epi-weeks (Monday-Sunday) and by WHO region(s).
 }

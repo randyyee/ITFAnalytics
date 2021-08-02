@@ -11,7 +11,7 @@ map_burden(df, world)
 Produces an epi curve, region stacked bar plot for each epi-week (Monday-Sunday).
 Input df SHOULD ONLY HAVE ONE DATE!}
 
-\item{world}{A dataframe with the following: admin, geometry, iso3code}
+\item{world}{Basemap, a dataframe with the following: admin, geometry, iso3code}
 }
 \description{
 Cross-sectional map: Average daily incidence for the past 7 days for each country.

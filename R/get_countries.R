@@ -187,36 +187,36 @@ get_country_coords <- function(world = file.choose()){
 #'
 #' @examples
 #' \dontrun{
-#' get_country_populations <- get_country_populations()}
+#' country_populations <- get_country_populations()}
 
 get_country_populations <- function(){
 
-  df <- openxlsx::read.xlsx("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2019_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES.xlsx",
-                            sheet = 1, startRow = 17) %>%
+  df_un <- openxlsx::read.xlsx("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2019_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES.xlsx",
+                               sheet = 1, startRow = 17) %>%
     dplyr::filter(Type == "Country/Area") %>%
-    dplyr::select(country = `Region,.subregion,.country.or.area.*`, `2020`) %>%
-    dplyr::mutate(`2020` = as.numeric(`2020`) * 1000) %>%
-    dplyr::mutate(country = dplyr::recode(country,
-                            "Bonaire, Sint Eustatius and Saba" = "Bonaire, Sint Eustatius, and Saba",
-                            "Micronesia (Fed. States of)"      = "Micronesia (Federated States of)",
-                            "Côte d'Ivoire"                    = "Cote d'Ivoire",
-                            "United Kingdom"                   = "The United Kingdom",
-                            "Dem. People's Republic of Korea"  = "Democratic People's Republic of Korea",
-                            "Saint Martin (French part)"       = "Saint Martin",
-                            "Northern Mariana Islands"         = "Northern Mariana Islands (Commonwealth of the)",
-                            "State of Palestine"               = "occupied Palestinian territory, including east Jerusalem",
-                            "Sint Maarten (Dutch part)"        = "Sint Maarten",
-                            "Wallis and Futuna Islands"        = "Wallis and Futuna",
-                            "China, Hong Kong SAR"             = "Hong Kong",
-                            "China, Taiwan Province of China"  = "Taiwan",
-                            "China, Macao SAR"                 = "Macau")) %>%
-    dplyr::add_row(country = "Guernsey",         `2020` =  67334)  %>% # CIA
-    dplyr::add_row(country = "Jersey",           `2020` =  101476) %>% # CIA
-    dplyr::add_row(country = "Pitcairn Islands", `2020` =  50)     %>% # CIA
-    dplyr::add_row(country = "Kosovo",           `2020` =  1935259) # CIA
+    dplyr::select(un_country = 3, un_countrycode = 5, `2020`) %>%
+    dplyr::mutate(`2020` = as.numeric(`2020`) * 1000)
 
-  #test <- left_join(who_list, df)
+  df_un2 <- openxlsx::read.xlsx("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2019_POP_F08_1_TOTAL_POPULATION_BY_BROAD_AGE_GROUP_BOTH_SEXES.xlsx",
+                                sheet = 1, startRow = 17) %>%
+    dplyr::filter(`Reference.date.(as.of.1.July)` == 2020 & Type == "Country/Area") %>%
+    dplyr::select(c(un_country = 3, un_countrycode = 5, 9, 48)) %>%
+    dplyr::mutate(`Total` = as.numeric(`Total`) * 1000,
+                  `18+`   = as.numeric(`18+`)   * 1000)
 
-  return(df)
+  df_un3 <- full_join(df_un, df_un2, by = "un_countrycode") %>%
+    dplyr::left_join(
+      openxlsx::read.xlsx("https://population.un.org/wpp/Download/Files/4_Metadata/WPP2019_F01_LOCATIONS.XLSX",
+                          sheet = 1, startRow = 17) %>%
+        select(country = 2, 4, 5),
+      by = c("un_countrycode" = "Location.code")
+    ) %>%
+    dplyr::select(country, `ISO3.Alpha-code`, un_countrycode, `2020`, `18+`) %>%
+    dplyr::add_row(country = "Guernsey",         `ISO3.Alpha-code` = "GGY", `2020` =  67334)   %>% # CIA
+    dplyr::add_row(country = "Jersey",           `ISO3.Alpha-code` = "JEY", `2020` =  101476)  %>% # CIA
+    dplyr::add_row(country = "Pitcairn Islands", `ISO3.Alpha-code` = "PCN", `2020` =  50)      %>% # CIA
+    dplyr::add_row(country = "Kosovo",           `ISO3.Alpha-code` = "XKX", `2020` =  1935259)     # CIA
+
+  return(df_un3)
 
 }

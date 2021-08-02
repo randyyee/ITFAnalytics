@@ -1,22 +1,36 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title plot_epicurve
-#' @description (EPI WEEK) Visualize epi curve by epi-weeks (Monday-Sunday).
-#' Default viz for WHO regions.
+#' @description (EPI WEEK) Visualize epi curve by epi-weeks (Monday-Sunday) and by WHO region(s).
+#'
 #' @param df A dataframe with the following: region, country, date, new_cases.
 #' For WHO default, region should be factors with levels of AMRO, EURO, SEARO, EMRO, AFRO, and WPRO.
 #' Produces an epi curve, region stacked bar plot for each epi-week (Monday-Sunday).
 #' @param transparent Default TRUE - returns a transparent plot.
+#' @param who.col.pal Default color pallet for all regions. Specify specific region color for individual region.
+#' @param regions Default all WHO regions. Specify specific region label for individual region.
+#'
 #' @importFrom magrittr `%>%`
 #'
 #' @export
 
-plot_epicurve <- function(df, transparent = T){
+plot_epicurve <- function(df, region = "Global", transparent = T){
 
-  who.col.pal  <- c("#aa001e", "#e7b351", "#00818a", "#d26230", "#005e70", "#d4ece8")
-  regions      <- c("Americas", "Europe", "Southeast Asia", "Eastern \nMediterranean", "Africa", "Western Pacific")
+  region_abbv <- c("AMRO", "EURO", "SEARO", "EMRO", "AFRO", "WPRO")
+  who.col.pal <- c("#aa001e", "#e7b351", "#00818a", "#d26230", "#005e70", "#d4ece8")
+  names       <- c("Americas", "Europe", "Southeast Asia", "Eastern \nMediterranean", "Africa", "Western Pacific")
+  col_master  <- data.frame(region_abbv, names, who.col.pal)
+
+  if(length(unique(df$region)) > 1){
+    regions      <- col_master$names
+    pallete      <- col_master$who.col.pal
+  } else {
+    regions      <- col_master[region_abbv == as.character(unique(df$who_region)), ]$names
+    pallete      <- col_master[region_abbv == as.character(unique(df$who_region)), ]$who.col.pal
+  }
+
   region_label <- "WHO Region"
-  gtitle       <- "Confirmed COVID-19 cases by week of report and WHO region"
+  gtitle       <- "Confirmed COVID-19 Cases by Week of Report and WHO Region"
 
   g <- ggplot2::ggplot(data     = df,
                        mapping = aes(x    = lubridate::floor_date(date, "week", week_start = 1),
@@ -26,7 +40,7 @@ plot_epicurve <- function(df, transparent = T){
                       stat     = "identity",
                       alpha    = 0.9) +
     ggplot2::theme_classic() +
-    ggplot2::scale_fill_manual(values = who.col.pal,
+    ggplot2::scale_fill_manual(values = pallete,
                                labels = regions) +
     ggplot2::ylab("Weekly Cases") +
     ggplot2::xlab("Week of Reporting") +
@@ -69,9 +83,7 @@ plot_epicurve <- function(df, transparent = T){
 #' Default viz for individual countries.
 #'
 #' @param df A dataframe with the following: country, date, cases and/or deaths
-#'
 #' @param type Default cases.
-#'
 #' @param incidence Default TRUE. Specify inputs are incidence values or not.
 #'
 #' @importFrom magrittr `%>%`
@@ -128,18 +140,17 @@ plot_epicurve_ind <- function(df, type = "cases", incidence = T){
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @title plot_epicurve_double
+#' @title plot_epicurve_epidouble
 #' @description (EPI WEEK) Visualize epi curve by cases and deaths.
 #' Default viz for individual countries.
 #'
 #' @param df A dataframe with the following: country, weekdate, cases and deaths
 #'
-#'
 #' @importFrom magrittr `%>%`
 #'
 #' @export
 
-plot_epicurve_double <- function(df){
+plot_epicurve_epidouble <- function(df){
 
   ylim.prim <- c(min(df$case, na.rm = T),
                  max(df$case, na.rm = T))
@@ -176,18 +187,17 @@ plot_epicurve_double <- function(df){
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @title plot_epicurve_double2
+#' @title plot_epicurve_dailydouble
 #' @description (DAILY) Visualize epi curve by cases and deaths.
 #' Default viz for individual countries.
 #'
 #' @param df A dataframe with the following: country, date, cases and deaths
 #'
-#'
 #' @importFrom magrittr `%>%`
 #'
 #' @export
 
-plot_epicurve_double2 <- function(df){
+plot_epicurve_dailydouble <- function(df){
 
   ylim.prim <- c(min(df$case, na.rm = T),
                  max(df$case, na.rm = T))

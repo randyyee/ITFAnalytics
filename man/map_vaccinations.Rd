@@ -12,5 +12,5 @@ map_vaccinations(df, world, type = "People")
 \item{world}{A dataframe with the following: admin, geometry, iso3code}
 }
 \description{
-Cross-sectional map: People vaccinated per 100 for each country.
+Cross-sectional map: People vaccinated per 100 for each country or Fully vaccinated.
 }

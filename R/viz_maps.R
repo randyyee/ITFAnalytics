@@ -80,14 +80,14 @@ map_template <- function(df, world, category_color_labels = "None", category_col
 #' @param df A dataframe with the following: region, country, date, incidence as 4-level factors (0- <1, 1- <10, 10- <25, 25+)
 #' Produces an epi curve, region stacked bar plot for each epi-week (Monday-Sunday).
 #' Input df SHOULD ONLY HAVE ONE DATE!
-#' @param world A dataframe with the following: admin, geometry, iso3code
+#' @param world Basemap, a dataframe with the following: admin, geometry, iso3code
 #' @importFrom magrittr `%>%`
 #'
 #' @export
 
 map_burden <- function(df, world){
 
-  if(length(unique(df$date))){
+  if(length(unique(df$date)) > 1){
     warning("Your dataframe has more than 1 date! This is a cross-sectional visualization!")
   }
 
@@ -114,7 +114,7 @@ map_burden <- function(df, world){
 
 map_trend <- function(df, world){
 
-  if(length(unique(df$date))){
+  if(length(unique(df$date)) > 1){
     warning("Your dataframe has more than 1 date! This is a cross-sectional visualization!")
   }
 
