@@ -234,3 +234,16 @@ plot_epicurve_dailydouble <- function(df){
                    legend.text     = ggplot2::element_text(size = 12))  +
     ggplot2::guides(color          = ggplot2::guide_legend(override.aes = list(fill = c("lightblue", NA))))
 }
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @title plot_riskmatrix
+#' @description (DAILY) Visualize epi curve by cases and deaths.
+#' Default viz for individual countries.
+#'
+#' @param df A dataframe with the following: country, date, cases and deaths
+#'
+#' @importFrom magrittr `%>%`
+#'
+#' @export

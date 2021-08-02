@@ -24,7 +24,7 @@ library(gt)
 sunday_date <-  Sys.Date()-8
 ```
 
-Epicurves (Global and Regional)
+## Data
 
 ```{r}
 df <- onetable %>%
@@ -33,6 +33,7 @@ df <- onetable %>%
   calc_add_risk()
 
 ```
+## Epicurves
 
 ```{r}
 # Global
@@ -50,6 +51,8 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 
 ```
 
+## Burden Map
+
 ```{r}
 map_burden(df %>%
              mutate(result = cut(week_case_incidence, breaks = c(-0.1, 1, 10, 25, Inf))) %>%
@@ -59,12 +62,14 @@ map_burden(df %>%
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   map_burden(df %>%
                filter(date == sunday_date) %>%
-               filter(!is.na(who_region) & who_region == r) %>%
+               filter(who_region == r) %>%
                mutate(result = cut(week_case_incidence, breaks = c(-0.1, 1, 10, 25, Inf)))) %>%
     ggsave(filename = paste0("burdenmap_", Sys.Date(), "_", r, ".png"), width = 6, height = 6, units = "in", bg = "white")
 }
 
 ```
+## Trend Map
+
 ```{r}
 map_trend(df %>%
             mutate(result = cut(percent_change_case, breaks = c(-Inf, -50, 0, 50, 100, 200, Inf))) %>%
@@ -74,11 +79,13 @@ map_trend(df %>%
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   map_trend(df %>%
                filter(date == sunday_date) %>%
-               filter(!is.na(who_region) & who_region == r) %>%
+               filter(who_region == r) %>%
                mutate(result = cut(percent_change_case, breaks = c(-Inf, -50, 0, 50, 100, 200, Inf)))) %>%
     ggsave(filename = paste0("percent_change_who_", Sys.Date(), "_", r, ".png"), width = 6, height = 6, units = "in", bg = "white")
 }
 ```
+## Top 10 Most Cases Table
+
 ```{r}
 df %>%
   filter(date == sunday_date) %>%
@@ -86,16 +93,63 @@ df %>%
   arrange (desc(value1)) %>%
   head(10) %>%
   table_10mostcases(., run_date = format(sunday_date, "%B %d, %Y")) %>%
-  gtsave(filename =  paste0("pct_chng_table_output_who_t3", sunday_date, ".png"), vwidth=650)
+  gtsave(filename =  paste0("most_cases_table_t1", sunday_date, ".png"), vwidth=650)
 
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   df %>%
     filter(date == sunday_date) %>%
+    filter(who_region == r) %>%
     select(country = who_country, value1 = week_case, value2 = percent_change_case) %>%
     arrange (desc(value1)) %>%
     head(10) %>%
     table_10mostcases(., type = r, run_date = format(sunday_date, "%B %d, %Y"))%>%
   gtsave(filename =  paste0('_wkcase_table_', Sys.Date(), "_", r, ".png"), vwidth=650)
+}
+```
+
+## Top 10 Incidence Table
+
+```{r}
+df %>%
+  filter(date == sunday_date) %>%
+  select(country = who_country, value1 = week_case_incidence, value2 = percent_change_case) %>%
+  arrange (desc(value1)) %>%
+  head(10) %>%
+  table_10incidence(., run_date = format(sunday_date, "%B %d, %Y")) %>%
+  gtsave(filename =  paste0("incidence_table_t2", sunday_date, ".png"), vwidth=650)
+
+for (r in unique(filter(df, !is.na(who_region))$who_region)){
+  df %>%
+    filter(date == sunday_date) %>%
+    filter(who_region == r) %>%
+    select(country = who_country, value1 = week_case_incidence, value2 = percent_change_case) %>%
+    arrange (desc(value1)) %>%
+    head(10) %>%
+    table_10incidence(., type = r, run_date = format(sunday_date, "%B %d, %Y"))%>%
+  gtsave(filename =  paste0('_wkcase_table2_', Sys.Date(), "_", r, ".png"), vwidth=650)
+}
+```
+
+## Top 10 Percent Change Table
+
+```{r}
+df %>%
+  filter(date == sunday_date) %>%
+  select(country = who_country, value1 = percent_change_case, value2 = percent_change4_case) %>%
+  arrange (desc(value1)) %>%
+  head(10) %>%
+  table_10percentchange(., run_date = format(sunday_date, "%B %d, %Y")) %>%
+  gtsave(filename =  paste0("pct_chng_table_output_who_t3", sunday_date, ".png"), vwidth=650)
+
+for (r in unique(filter(df, !is.na(who_region))$who_region)){
+  df %>%
+    filter(date == sunday_date) %>%
+    filter(who_region == r) %>%
+    select(country = who_country, value1 = percent_change_case, value2 = percent_change4_case) %>%
+    arrange (desc(value1)) %>%
+    head(10) %>%
+    table_10percentchange(., type = r, run_date = format(sunday_date, "%B %d, %Y"))%>%
+  gtsave(filename =  paste0('_wkcase_table3_', Sys.Date(), "_", r, ".png"), vwidth=650)
 }
 ```
 
