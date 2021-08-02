@@ -22,7 +22,8 @@ Imports:
     tibble,
     jsonlite,
     httr,
-    sf
+    sf,
+    webshot
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

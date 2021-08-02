@@ -180,7 +180,7 @@ map_vaccinations <- function(df, type = "People"){
   cat_vals = c("#d4ece8","#a2d9d2", "#1f9fa9", "#005e70", "#27343a")
   cat_labs = c("<1", "1- <3", "3- <10", "10- <30", "30+")
 
-  map_template(df, country_coords, cat_labs, cat_vals) +
+  map_template(df, cat_labs, cat_vals) +
     labs(title    = paste0("People Vaccinated per 100 People, ", format(max(df$date), "%B %d, %Y")),
          subtitle = "Number of people out of 100 who received at least one vaccine dose; does not represent percent of \npopulation fully vaccinated",
          caption  = "Note:
@@ -192,7 +192,7 @@ map_vaccinations <- function(df, type = "People"){
     cat_vals = c("#CCECE6","#99D8C9", "#66C2A4", "#2CA25F", "#006D2C")
     cat_labs = c("<1", "1- <3", "3- <10", "10- <30", "30+")
 
-    map_template(df, country_coords, cat_labs, cat_vals) +
+    map_template(df, cat_labs, cat_vals) +
       labs(title    = paste0("People Fully Vaccinated per 100 People, ", format(max(df$date), "%B %d, %Y")),
            subtitle = "Represents percent of population fully vaccinated",
            caption  = "Note:
