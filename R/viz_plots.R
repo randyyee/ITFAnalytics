@@ -239,11 +239,58 @@ plot_epicurve_dailydouble <- function(df){
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title plot_riskmatrix
-#' @description (DAILY) Visualize epi curve by cases and deaths.
-#' Default viz for individual countries.
-#'
+#' @description Plot risk matrix.
 #' @param df A dataframe with the following: country, date, cases and deaths
 #'
 #' @importFrom magrittr `%>%`
 #'
 #' @export
+
+plot_riskmatrix <- function(df){
+  ggplot2::ggplot(data = df, aes(x = percent_change_case, y = week_case_incidence)) +
+    ggplot2::geom_point(aes(size = week_case, color = who_region), alpha=0.7) +
+    ggplot2::scale_color_manual(values = c("#aa001e", "#e7b351", "#00818a", "#d26230", "#005e70", "#d4ece8"),
+                                labels = c("Americas", "Europe", "Southeast Asia", "Eastern \nMediterranean", "Africa", "Western Pacific")) +
+    ggrepel::geom_text_repel(aes(label = labels),
+                             color              = 'black',
+                             size               = 2.7,
+                             min.segment.length = 0,
+                             seed               = 42,
+                             box.padding        = 0.6) +
+    ggplot2::scale_size(name   = "Weekly Cases",
+                        range  = c(2, 12),
+                        breaks = c(100, 1000, 10000, 100000, 250000, 500000, 750000),
+                        labels = scales::comma) +
+    ggplot2::guides(color = guide_legend(override.aes = list(size = 6), order = 1)) +
+    ggplot2::xlim(min(df$percent_change_case, na.rm = T), max(df$percent_change_case, na.rm = T)) +
+    ggplot2::ylim(0,max(df$week_case_incidence, na.rm = T)) +
+    ggplot2::xlab("% Change in Weekly Cases") + labs(color="WHO Region")+
+    ggplot2::ylab("Average Daily Incidence per 100,000") +
+    ggplot2::geom_vline(xintercept = 0,    color = 'gray50',    lty = 2) +
+    ggplot2::geom_hline(yintercept = 0,    color = "green3",    linetype = "dashed") +
+    ggplot2::geom_hline(yintercept = 1.0,  color = "goldenrod1",linetype = "dashed") +
+    ggplot2::geom_hline(yintercept = 10.0, color = "orange2",   linetype = "dashed") +
+    ggplot2::geom_hline(yintercept = 25.0, color = "red3",      linetype = "dashed") +
+    ggplot2::annotate(geom = "text", x = -133, y = 0.6,  label = "< 1.0 per 100k",       color = "green3",    size = 3)+
+    ggplot2::annotate(geom = "text", x = -125, y = 1.7,  label = "1.0 - 9.9 per 100k",   color = "goldenrod1",size = 3)+
+    ggplot2::annotate(geom = "text", x = -122, y = 10.7, label = "10.0 - 24.9 per 100k", color = "orange2",   size = 3)+
+    ggplot2::annotate(geom = "text", x = -133, y = 25.7, label = "25.0+ per 100k",       color = "red3",      size = 3)+
+    ggplot2::theme_classic() +
+    ggplot2::theme(axis.text     = element_text(size = 8),
+                   axis.title    = element_text(size = 10),
+                   legend.text   = element_text(size = 7),
+                   legend.title  = element_text(size = 9),
+                   plot.title    = element_text(size = 16, face = "bold"),
+                   plot.subtitle = element_text(size = 11),
+                   plot.margin   = unit(c(1,1.6,1.3,1),"cm"),
+                   plot.caption  = element_text(hjust = 0, size = 11)) +
+    ggplot2::labs(title    = "Burden and Recent Trends",
+                  subtitle = paste0("Average daily incidence per 100,000 population and 7-day percent change, by new cases in past 7 days\n",
+                                    format(max(df$date)-13, "%B %d, %Y"), ' - ', format(max(df$date)-7, "%B %d, %Y"), ' to ',
+                                    format(max(df$date)-6, "%B %d, %Y"), ' - ', format(max(df$date), "%B %d, %Y")),
+                  caption  = "
+         \nNotes:
+         -Includes countries with a population greater than 10 million people and more than 100 cases in the last week
+         -Countries with a population over 10 million are labeled if they are among the top ten highest countries for cases,
+         incidence, or weekly percent change in cases.")
+}

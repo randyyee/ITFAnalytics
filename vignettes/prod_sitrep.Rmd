@@ -28,7 +28,7 @@ sunday_date <-  Sys.Date()-1
 
 ```{r}
 df <- onetable %>%
-  left_join(get_covid_df() %>% select(-who_region), 
+  right_join(get_covid_df() %>% select(-who_region), 
             by = c("iso2code" = "country_code")) %>%
   calc_add_risk()
 
@@ -45,7 +45,7 @@ plot_epicurve(filter(df, !is.na(who_region)  & source == "WHO"))%>%
 
 #Regions
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
-  plot_epicurve(filter(df, !is.na(who_region) & who_region == r), transparent = F) %>%
+  plot_epicurve(filter(df, !is.na(who_region) & source == "WHO" & who_region == r), transparent = F) %>%
     ggsave(filename = paste0("epi_curve_", Sys.Date(), "_", r, ".png"), width = 9, height = 2.5, units = "in", bg = "transparent")
 }
 
@@ -55,12 +55,14 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 
 ```{r}
 map_burden(df %>%
+             filter(id != "CHN" | source != "WHO") %>%
              mutate(result = cut(week_case_incidence, breaks = c(-0.1, 1, 10, 25, Inf))) %>%
              filter(date == sunday_date)) %>%
   ggsave(filename = paste0("epi_curve_", Sys.Date(), "_", r, ".png"), width = 9, height = 2.5, units = "in", bg = "transparent")
 
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   map_burden(df %>%
+               filter(id != "CHN" | source != "WHO") %>%
                filter(date == sunday_date) %>%
                filter(who_region == r) %>%
                mutate(result = cut(week_case_incidence, breaks = c(-0.1, 1, 10, 25, Inf)))) %>%
@@ -72,12 +74,14 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 
 ```{r}
 map_trend(df %>%
+            filter(id != "CHN" | source != "WHO") %>%
             mutate(result = cut(percent_change_case, breaks = c(-Inf, -50, 0, 50, 100, 200, Inf))) %>%
             filter(date == sunday_date)) %>%
   ggsave(filename = paste0("percent_change_who_", Sys.Date(), ".png"), width = 7.5, height = 4.2, units = "in", bg = "white")
 
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   map_trend(df %>%
+              filter(id != "CHN" | source != "WHO") %>%
                filter(date == sunday_date) %>%
                filter(who_region == r) %>%
                mutate(result = cut(percent_change_case, breaks = c(-Inf, -50, 0, 50, 100, 200, Inf)))) %>%
@@ -89,6 +93,7 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 ```{r}
 df %>%
   filter(date == sunday_date) %>%
+  filter(id != "CHN" | source != "WHO") %>%
   select(country = who_country, value1 = week_case, value2 = percent_change_case) %>%
   arrange (desc(value1)) %>%
   head(10) %>%
@@ -98,6 +103,7 @@ df %>%
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   df %>%
     filter(date == sunday_date) %>%
+    filter(id != "CHN" | source != "WHO") %>%
     filter(who_region == r) %>%
     select(country = who_country, value1 = week_case, value2 = percent_change_case) %>%
     arrange (desc(value1)) %>%
@@ -112,6 +118,7 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 ```{r}
 df %>%
   filter(date == sunday_date) %>%
+  filter(id != "CHN" | source != "WHO") %>%
   select(country = who_country, value1 = week_case_incidence, value2 = percent_change_case) %>%
   arrange (desc(value1)) %>%
   head(10) %>%
@@ -121,6 +128,7 @@ df %>%
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   df %>%
     filter(date == sunday_date) %>%
+    filter(id != "CHN" | source != "WHO") %>%
     filter(who_region == r) %>%
     select(country = who_country, value1 = week_case_incidence, value2 = percent_change_case) %>%
     arrange (desc(value1)) %>%
@@ -135,6 +143,8 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 ```{r}
 df %>%
   filter(date == sunday_date) %>%
+  filter(id != "CHN" | source != "WHO") %>%
+  filter(population >= 10000000) %>% #Exclude population less than 10M
   select(country = who_country, value1 = percent_change_case, value2 = percent_change4_case) %>%
   arrange (desc(value1)) %>%
   head(10) %>%
@@ -144,6 +154,8 @@ df %>%
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   df %>%
     filter(date == sunday_date) %>%
+    filter(id != "CHN" | source != "WHO") %>%
+    filter(population >= 100000) %>% #Exclude population less than 100,000
     filter(who_region == r) %>%
     select(country = who_country, value1 = percent_change_case, value2 = percent_change4_case) %>%
     arrange (desc(value1)) %>%
@@ -151,5 +163,24 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
     table_10percentchange(., type = r, run_date = format(sunday_date, "%B %d, %Y"))%>%
   gtsave(filename =  paste0('_wkcase_table3_', Sys.Date(), "_", r, ".png"), vwidth=650)
 }
+```
+
+## Risk Matrix
+
+```{r}
+df %>%
+  filter(date == sunday_date) %>%
+  filter(id != "CHN" | source != "WHO") %>%
+  filter(population >= 10000000) %>% #Exclude population less than 10M
+  filter(week_case >= 100) %>%
+  mutate(rank_inc = dense_rank(desc(week_case_incidence)),
+         rank_per = dense_rank(desc(percent_change_case)),
+         rank_cas = dense_rank(desc(week_case))) %>%
+  mutate(labels   = case_when(rank_inc %in% 1:10 ~ country,
+                              rank_per %in% 1:10 ~ country,
+                              rank_cas %in% 1:10 ~ country)) %>%
+  plot_riskmatrix() %>%
+  ggsave(filename =  paste0('global_risk_matrix_who_', Sys.Date(), ".png"), width = 11, height = 7, units = "in")
+           
 ```
 

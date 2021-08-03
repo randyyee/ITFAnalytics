@@ -123,14 +123,19 @@ table_10incidence <- function(df, type = "Global", run_date = "Enter a date"){
 
   gt::gt(df) %>%
     gt::tab_header(title   = title_label) %>%
+    gt::data_color(columns = c(value1),
+                   colors  = scales::col_bin(palette = c("#1f9fa9", "#e7b351", "#d26230", "#aa001e"),
+                                             bins    = c(0, 1, 10, 25, 1000),
+                                             na.color = "white")) %>%
     gt::data_color(columns = c(value2),
                    colors  = scales::col_bin(palette = c("#1f9fa9", "#c0ebec", "#e57e51", "#d26230", "#c92929", "#7c0316"),
                                              bins    = c(-Inf, -50, 0, 50, 100, 200, Inf))) %>%
-    gt::fmt_number(columns  = c(value2),
-                   decimals = 1) %>%
     gt::fmt_number(columns  = c(value1),
                    sep_mark = ",",
-                   decimals = 0)  %>%
+                   decimals = 1) %>%
+    gt::fmt_number(columns  = c(value2),
+                   sep_mark = ",",
+                   decimals = 1)  %>%
     gt::cols_label(country = gt::html("Country/ Area"),
                    value1  = gt::html("New Cases<br>This Week"),
                    value2  = gt::html("% Change<br>Last Week")) %>%
