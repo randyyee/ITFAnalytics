@@ -4,7 +4,7 @@
 \alias{table_10percentchange}
 \title{table_10percentchange}
 \usage{
-table_10percentchange(df)
+table_10percentchange(df, type = "Global", run_date = "Enter a date")
 }
 \arguments{
 \item{df}{A dataframe with the following and in this order: country, value1 - last week percent change, value2 - 4 week percent change, date}

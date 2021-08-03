@@ -4,7 +4,7 @@
 \alias{table_10mostcases}
 \title{table_10mostcases}
 \usage{
-table_10mostcases(df)
+table_10mostcases(df, type = "Global", run_date = "Enter a date")
 }
 \arguments{
 \item{df}{A dataframe with the following and in this order: country, value1 - cases, value2 - percent change}

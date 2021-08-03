@@ -240,7 +240,7 @@ plot_epicurve_dailydouble <- function(df){
 
 #' @title plot_riskmatrix
 #' @description Plot risk matrix.
-#' @param df A dataframe with the following: country, date, cases and deaths
+#' @param df A dataframe with riskmatrix stats.
 #'
 #' @importFrom magrittr `%>%`
 #'
@@ -294,3 +294,14 @@ plot_riskmatrix <- function(df){
          -Countries with a population over 10 million are labeled if they are among the top ten highest countries for cases,
          incidence, or weekly percent change in cases.")
 }
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @title plot_vaxcoverage
+#' @description Plot vaccination coverage by region.
+#' @param df A dataframe with vaccination stats.
+#'
+#' @importFrom magrittr `%>%`
+#'
+#' @export

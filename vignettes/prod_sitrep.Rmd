@@ -28,10 +28,9 @@ sunday_date <-  Sys.Date()-1
 
 ```{r}
 df <- onetable %>%
-  right_join(get_covid_df() %>% select(-who_region), 
-            by = c("iso2code" = "country_code")) %>%
-  calc_add_risk()
-
+  right_join(get_covid_df() %>% select(-who_region), by = c("iso2code" = "country_code")) %>%
+  calc_add_risk() %>%
+  left_join(get_vax(), by = c("id" = "iso_code", "date"))
 ```
 ## Epicurves
 
@@ -88,6 +87,24 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
     ggsave(filename = paste0("percent_change_who_", Sys.Date(), "_", r, ".png"), width = 6, height = 6, units = "in", bg = "white")
 }
 ```
+
+## Vaccine Map
+
+```{r}
+df %>% 
+  filter(date <= sunday_date) %>%
+  filter(id != "CHN" | source != "WHO") %>%
+  mutate(result = cut(people_vaccinated_per_hundred, breaks = c(0, 1, 3, 10, 30, Inf))) %>%
+  group_by(country) %>%
+  filter(!is.na(result)) %>%
+  arrange(date) %>%
+  top_n(1, date) %>%
+  distinct(id, .keep_all = T) %>%
+  map_vaccinations(., type = "People") %>%
+  ggsave(filename =  paste0("vaccine_map_", Sys.Date(), ".png"), width = 7.5, height = 4.2, units = "in", bg = "white")
+```
+
+
 ## Top 10 Most Cases Table
 
 ```{r}
@@ -98,7 +115,7 @@ df %>%
   arrange (desc(value1)) %>%
   head(10) %>%
   table_10mostcases(., run_date = format(sunday_date, "%B %d, %Y")) %>%
-  gtsave(filename =  paste0("most_cases_table_t1", sunday_date, ".png"), vwidth=650)
+  gtsave(filename =  paste0("most_cases_table_t1", Sys.Date(), ".png"), vwidth=650)
 
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   df %>%
@@ -123,7 +140,7 @@ df %>%
   arrange (desc(value1)) %>%
   head(10) %>%
   table_10incidence(., run_date = format(sunday_date, "%B %d, %Y")) %>%
-  gtsave(filename =  paste0("incidence_table_t2", sunday_date, ".png"), vwidth=650)
+  gtsave(filename =  paste0("incidence_table_t2", Sys.Date(), ".png"), vwidth=650)
 
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   df %>%
@@ -149,7 +166,7 @@ df %>%
   arrange (desc(value1)) %>%
   head(10) %>%
   table_10percentchange(., run_date = format(sunday_date, "%B %d, %Y")) %>%
-  gtsave(filename =  paste0("pct_chng_table_output_who_t3", sunday_date, ".png"), vwidth=650)
+  gtsave(filename =  paste0("pct_chng_table_output_who_t3", Sys.Date(), ".png"), vwidth=650)
 
 for (r in unique(filter(df, !is.na(who_region))$who_region)){
   df %>%

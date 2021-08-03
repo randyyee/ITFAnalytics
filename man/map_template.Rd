@@ -4,17 +4,15 @@
 \alias{map_template}
 \title{map_template}
 \usage{
-map_template(df, world, category_color_labels = "None", category_color_values)
+map_template(df, category_color_labels = "None", category_color_values)
 }
 \arguments{
 \item{df}{A dataframe with the following: country, geometry, date, result = factor value}
-
-\item{world}{A dataframe with the following: geometry}
 
 \item{category_color_labels}{List of labels that should map to the factor values of the df. Use "None" if no categories.}
 
 \item{category_color_values}{List of color values for mapping the labels. Needs to have the same length as category_color_labels!}
 }
 \description{
-Cross-sectional map.
+Cross-sectional map. Uses the stored country_coords data as the base map.
 }

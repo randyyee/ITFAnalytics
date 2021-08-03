@@ -4,12 +4,10 @@
 \alias{map_vaccinations}
 \title{map_vaccinations}
 \usage{
-map_vaccinations(df, world, type = "People")
+map_vaccinations(df, type = c("People", "Fully"))
 }
 \arguments{
 \item{df}{A dataframe with the following: region, country, date, percent_change AS 6-level factors (<1 1- <3, 3- <10, 10 -<30, 30+).}
-
-\item{world}{A dataframe with the following: admin, geometry, iso3code}
 }
 \description{
 Cross-sectional map: People vaccinated per 100 for each country or Fully vaccinated.

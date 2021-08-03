@@ -4,14 +4,12 @@
 \alias{map_burden}
 \title{map_burden}
 \usage{
-map_burden(df, world)
+map_burden(df)
 }
 \arguments{
 \item{df}{A dataframe with the following: region, country, date, incidence as 4-level factors (0- <1, 1- <10, 10- <25, 25+)
 Produces an epi curve, region stacked bar plot for each epi-week (Monday-Sunday).
 Input df SHOULD ONLY HAVE ONE DATE!}
-
-\item{world}{Basemap, a dataframe with the following: admin, geometry, iso3code}
 }
 \description{
 Cross-sectional map: Average daily incidence for the past 7 days for each country.
