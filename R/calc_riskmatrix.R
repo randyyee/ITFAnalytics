@@ -22,9 +22,9 @@ calc_add_risk <- function(df){
                   cumulative_deaths_copy = replace(cumulative_deaths, cumulative_deaths < 0 | is.na(cumulative_deaths), 0)) %>%
     dplyr::group_by(source, id) %>%
     dplyr::arrange(date) %>%
-    dplyr::mutate(daily_case_incidence  = dplyr::if_else(population > 0, ((new_cases_copy/population)) * 100000,  NA_real_),
+    dplyr::mutate(weekdate              = lubridate::floor_date(date, "week", week_start = 1),
+                  daily_case_incidence  = dplyr::if_else(population > 0, ((new_cases_copy/population)) * 100000,  NA_real_),
                   daily_death_incidence = dplyr::if_else(population > 0, ((new_deaths_copy/population)) * 100000, NA_real_),
-                  weekdate              = lubridate::floor_date(date, "week", week_start = 1),
                   week_case             = cumulative_cases_copy - dplyr::lag(cumulative_cases_copy, 7),
                   prev_week_case        = dplyr::lag(cumulative_cases_copy, 7) - dplyr::lag(cumulative_cases_copy, 14),
                   prev_4week_case       = dplyr::lag(cumulative_cases_copy, 28) - dplyr::lag(cumulative_cases_copy, 35),
@@ -42,9 +42,9 @@ calc_add_risk <- function(df){
                   week_death_change     = dplyr::if_else(prev_week_death > 0, (diff_death)/prev_week_death, NA_real_)) %>%
     dplyr::mutate(week_case_incidence   = dplyr::if_else(population > 0, ((week_case/population)/7)  * 100000,  NA_real_),
                   week_death_incidence  = dplyr::if_else(population > 0, ((week_death/population)/7) * 100000, NA_real_)) %>%
-    dplyr::mutate(percent_change_case   = dplyr::if_else(!(is.na(week_case_change))  | !(is.infinite(week_case_change)),  week_case_change  * 100, NA_real_),
-                  percent_change4_case  = dplyr::if_else(!(is.na(week_case_change4)) | !(is.infinite(week_case_change4)), week_case_change4 * 100, NA_real_),
-                  percent_change_death  = dplyr::if_else(!(is.na(week_death_change)) | !(is.infinite(week_death_change)), week_death_change * 100, NA_real_))
+    dplyr::mutate(percent_change_case   = dplyr::if_else((!is.na(week_case_change))  & (!is.infinite(week_case_change)),  week_case_change  * 100, NA_real_),
+                  percent_change4_case  = dplyr::if_else((!is.na(week_case_change4)) & (!is.infinite(week_case_change4)), week_case_change4 * 100, NA_real_),
+                  percent_change_death  = dplyr::if_else((!is.na(week_death_change)) & (!is.infinite(week_death_change)), week_death_change * 100, NA_real_))
 
   return(df)
 }

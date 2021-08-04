@@ -29,7 +29,8 @@ get_vax <- function() {
                              "Laos"                      = "Lao People's Democratic Republic",
                              "Iran"                      = "Iran (Islamic Republic of)",
                              "Curacao"                   = "Curaçao",
-                             "Cape Verde"                = "Cabo Verde"))
+                             "Cape Verde"                = "Cabo Verde"))%>%
+    dplyr::mutate(daily_vaccinations_per_hundred = daily_vaccinations_per_million/10000)
 }
 
 
