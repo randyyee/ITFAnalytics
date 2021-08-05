@@ -23,6 +23,13 @@ sunday_date <-  lubridate::floor_date(Sys.Date(), "week", week_start = 7)
 
 ## Data
 
+onetable - stored metadata
+get_covid_df()
+calc_add_risk()
+get_vax()
+
+This snippet produces the master dataframe with all the variables required for all of the sitrep graphics.
+
 ```{r}
 df <- onetable %>%
   right_join(get_covid_df() %>% select(-who_region), by = c("iso2code" = "country_code")) %>%
@@ -31,6 +38,10 @@ df <- onetable %>%
 ```
 
 ## Epicurves
+
+plot_epicurve(df, transparent = T)
+
+The "plot_epicurve" function should take in the df with only WHO observations in order to match the same curve on the who.int dashboard. The individual epicurves for each region can be run simply by filtering for one region in the dataframe. The function will detect that the region column has only one region and will produce the epicurve accordingly.
 
 ```{r}
 # Global
@@ -49,6 +60,10 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 ```
 
 ## Burden Map
+
+map_burden(df)
+
+The "map_burden" function requires a result column where weekly average incidence is converted into factors using "cut". The dataframe normally used is WHO appended with JHU and filtered for the report date. The region maps can also be produced by simply filtering the input dataframe for the specific region. Again the function will detect the number of regions provided and will act accordingly.
 
 ```{r}
 map_burden(df %>%
@@ -69,6 +84,10 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 ```
 ## Trend Map
 
+map_trend(df)
+
+The "map_trend" function requires a result column where weekly percent change is converted into factors using "cut". The dataframe normally used is WHO appended with JHU and filtered for the report date. The region maps can also be produced by simply filtering the input dataframe for the specific region. Again the function will detect the number of regions provided and will act accordingly.
+
 ```{r}
 map_trend(df %>%
             filter(date == sunday_date) %>%
@@ -86,7 +105,7 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 }
 ```
 
-## Vaccine Map
+## Vaccine Map (Global Only)
 
 ```{r}
 df %>% 
@@ -181,7 +200,9 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 
 ## Top 10 Vaccinations Table
 
-The "table_10vaccinations" function takes looks for a country, value1 (people vaccinated per hundred), and a value2 (daily vaccinations per hundred) column.  
+table_10vaccinations(df, type = Global or Region, run_date)
+
+The "table_10vaccinations" function takes looks for a country, value1 (people vaccinated per hundred), and a value2 (daily vaccinations per hundred) column. Note as vaccination reporting has gaps, the dataframe must be sliced by country and the most recent date with people_vaccinated_per_hundred value (if there is one). 
 
 ```{r}
 df %>% 
@@ -218,7 +239,11 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 ```
 
 
-## Risk Matrix
+## Risk Matrix (Global Only)
+
+plot_riskmatrix(df)
+
+Note for labeling purposes, the labels variable should be added to the dataframe specifying the top 10 countries for weekly average incidence, week case percent change, and weekly total cases. Exclusion criteria: Countries with population less than 10 million and countries with weekly cases totals less than 100.
 
 ```{r}
 df %>%
@@ -237,7 +262,7 @@ df %>%
            
 ```
 
-## Vaccination Coverage
+## Vaccination Coverage (Global Only)
 
 ```{r}
 df %>% 
