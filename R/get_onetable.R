@@ -48,6 +48,8 @@ get_onetable <- function(country_geometries = country_coords){
     dplyr::mutate(id = ifelse(is.na(id), passport::parse_country(who_country, to = "iso3c", language = c("en")), id)) %>%
     dplyr::ungroup()
 
+  ## State Department Regions
+
   ## UN World Population
   # Getting the population numbers from UN and gaps from CIA Factbook (https://www.cia.gov/the-world-factbook/field/population/country-comparison).
   df_un <- openxlsx::read.xlsx("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2019_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES.xlsx",

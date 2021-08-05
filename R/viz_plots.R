@@ -24,7 +24,7 @@ plot_epicurve <- function(df, region = "Global", transparent = T){
   if(length(unique(df$region)) > 1){
     regions      <- col_master$names
     pallete      <- col_master$who.col.pal
-    gtitle        <- "Confirmed COVID-19 Cases by Week of Report and WHO Region"
+    gtitle       <- "Confirmed COVID-19 Cases by Week of Report and WHO Region"
     region_label <- "WHO Region"
     legend       <- "right"
   } else {
@@ -34,8 +34,6 @@ plot_epicurve <- function(df, region = "Global", transparent = T){
     region_label <- ""
     legend       <- "none"
   }
-
-  region_label <- "WHO Region"
 
   g <- ggplot2::ggplot(data     = df,
                        mapping = aes(x    = lubridate::floor_date(date, "week", week_start = 1),
@@ -305,3 +303,49 @@ plot_riskmatrix <- function(df){
 #' @importFrom magrittr `%>%`
 #'
 #' @export
+
+plot_vaxcoverage <- function(df){
+
+  my_pal_vax <- function(range = c(3, 25)) {
+    force(range)
+    function(x) scales::rescale(x, to = range, from = c(0, 1))
+  }
+
+  ggplot2::ggplot(df, aes(x = people_vaccinated_per_hundred, y = who_region)) +
+    ggplot2::geom_point(aes(size = total_vaccinations, fill = who_region),
+                        shape = 21,
+                        color = 'gray60',
+                        alpha = 0.6) +
+    ggrepel::geom_text_repel(aes(label = labels, point.size = total_vaccinations),
+                             color              = "gray25",
+                             min.segment.length = 0,
+                             max.overlaps       = Inf,
+                             size               = 3,
+                             force              = 0.7,
+                             force_pull         = 0.7,
+                             direction          = "both",
+                             box.padding        = 0.4,
+                             point.padding      = 0)+
+    ggplot2::continuous_scale(aesthetics = c("size", "point.size"), scale_name = "size", palette = my_pal_vax(),
+                              labels = scales::comma, breaks = c(1000000, 50000000, 300000000, 750000000),
+                              guide  = guide_legend(override.aes = list(label = "")),
+                              name   = "Total vaccine \ndoses administered") +
+    ggplot2::scale_fill_brewer(name  = "WHO Region", palette = "Set1") +
+    ggplot2::scale_x_continuous(name = "People Vaccinated per 100") +
+    ggplot2::scale_y_discrete(name = NULL) +
+    ggplot2::guides(fill = guide_legend(reverse = TRUE, override.aes = list(size = 8))) +
+    ggplot2::theme_bw() +
+    ggplot2::labs(title = paste0("People Vaccinated per 100 people by WHO Region, ", format(max(df$date), "%B %d, %Y")),
+                  caption = "
+         \nNotes:
+      -People Vaccinated per 100: number of people who received at least one vaccine dose; does not represent
+      percent of population fully vaccinated
+      -Total vaccine doses administered: total doses given, does not represent number of people vaccinated
+      -Countries are labeled such that within each WHO Region, labeled countries are those that are the top 3 ranking countries
+      for people vaccinated per 100 and the top 3 ranking countries for total vaccine doses administered
+      -Vaccine data are incomplete and data may be out of date",
+                  legend.title  = element_text(size = 10, face = "bold")) +
+    ggplot2::theme(plot.title   = element_text(size = 14, face = "bold"),
+                   axis.title   = element_text(size = 12),
+                   plot.caption = element_text(hjust = 0, size = 12))
+}

@@ -7,15 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  root.dir = "C:/Users/lanak/Desktop/Sitrep"
 )
-```
-
-```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "C:/Users/lanak/Desktop/Sitrep")
 
 library(ITFAnalytics)
 library(tidyverse)
@@ -32,6 +29,7 @@ df <- onetable %>%
   calc_add_risk() %>%
   left_join(get_vax(), by = c("id" = "iso_code", "date"))
 ```
+
 ## Epicurves
 
 ```{r}
@@ -97,9 +95,8 @@ df %>%
   mutate(result = cut(people_vaccinated_per_hundred, breaks = c(0, 1, 3, 10, 30, Inf))) %>%
   group_by(country) %>%
   filter(!is.na(result)) %>%
-  arrange(date) %>%
-  top_n(1, date) %>%
-  distinct(id, .keep_all = T) %>%
+  filter(date == max(date)) %>%
+  ungroup() %>%
   map_vaccinations(., type = "People") %>%
   ggsave(filename =  paste0("vaccine_map_", Sys.Date(), ".png"), width = 7.5, height = 4.2, units = "in", bg = "white")
 ```
@@ -184,6 +181,8 @@ for (r in unique(filter(df, !is.na(who_region))$who_region)){
 
 ## Top 10 Vaccinations Table
 
+The "table_10vaccinations" function takes looks for a country, value1 (people vaccinated per hundred), and a value2 (daily vaccinations per hundred) column.  
+
 ```{r}
 df %>% 
   filter(date <= sunday_date) %>%
@@ -191,9 +190,8 @@ df %>%
   filter(population > 1000000) %>%
   group_by(country) %>%
   filter(!is.na(people_vaccinated_per_hundred)) %>%
-  arrange(date) %>%
-  top_n(1, date) %>%
-  distinct(id, .keep_all = T) %>%
+  filter(date == max(date)) %>%
+  ungroup() %>%
   select(country = who_country, value1 = people_vaccinated_per_hundred, value2 = daily_vaccinations_per_hundred) %>%
   arrange(desc(value1)) %>%
   head(10) %>%
@@ -237,5 +235,26 @@ df %>%
   plot_riskmatrix() %>%
   ggsave(filename =  paste0('global_risk_matrix_who_', Sys.Date(), ".png"), width = 11, height = 7, units = "in")
            
+```
+
+## Vaccination Coverage
+
+```{r}
+df %>% 
+  filter(date <= sunday_date) %>%
+  filter(id != "CHN" | source != "WHO") %>%
+  group_by(country, source) %>%
+  arrange(desc(date)) %>%
+  fill(total_vaccinations, .direction = "downup") %>%
+  fill(people_vaccinated_per_hundred, .direction = "updown") %>%
+  ungroup() %>%
+  filter(date == max(date)) %>%
+  group_by(who_region) %>%
+  mutate(rank_people = dense_rank(-people_vaccinated_per_hundred),
+         rank_total  = dense_rank(-total_vaccinations)) %>%
+  mutate(labels      = case_when(rank_people %in% 1:3 ~ country,
+                                 rank_total  %in% 1:3 ~ country)) %>%
+  ungroup() %>%
+  plot_vaxcoverage()
 ```
 
