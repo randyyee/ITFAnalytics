@@ -12,6 +12,8 @@ get_onetable(country_geometries = country_coords)
 \description{
 One table to rule them all and in keys bind them!
 Output is available through the package as "onetable," but this function can be used to recreate this dataset.
+Note: state regions is handled externally by an excel file (two column table: id -iso3code and state_region).
+User will be prompted to import this file by the function!
 To regenerate and make the data available again for the package, run the following in dev and rebuild package:
 1. onetable <- get_onetable()
 2. usethis::use_data(onetable, overwrite=T)

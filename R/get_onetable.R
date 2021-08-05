@@ -3,6 +3,8 @@
 #' @title get_onetable
 #' @description One table to rule them all and in keys bind them!
 #' Output is available through the package as "onetable," but this function can be used to recreate this dataset.
+#' Note: state regions is handled externally by an excel file (two column table: id -iso3code and state_region).
+#' User will be prompted to import this file by the function!
 #' To regenerate and make the data available again for the package, run the following in dev and rebuild package:
 #' 1. onetable <- get_onetable()
 #' 2. usethis::use_data(onetable, overwrite=T)
@@ -49,6 +51,7 @@ get_onetable <- function(country_geometries = country_coords){
     dplyr::ungroup()
 
   ## State Department Regions
+  df_meta <- dplyr::left_join(df_meta, openxlsx::read.xlsx(file.choose()), by = "id")
 
   ## UN World Population
   # Getting the population numbers from UN and gaps from CIA Factbook (https://www.cia.gov/the-world-factbook/field/population/country-comparison).
@@ -86,7 +89,7 @@ get_onetable <- function(country_geometries = country_coords){
   df_meta <- df_meta %>%
     dplyr::left_join(country_geometries, by = c("id" = "iso3code")) # country_coords
 
-  df_meta <- dplyr::select(df_meta, id, iso2code, who_region, who_country, incomelevel_value, population = `2020`, eighteenplus = `18+`, geometry)
+  df_meta <- dplyr::select(df_meta, id, iso2code, state_region, who_region, who_country, incomelevel_value, population = `2020`, eighteenplus = `18+`, geometry)
 }
 
 
@@ -123,4 +126,6 @@ get_country_coords <- function(world = file.choose()){
 
   return(df)
 }
+
+
 
