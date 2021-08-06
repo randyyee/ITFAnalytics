@@ -36,9 +36,11 @@ devtools::install_github("randyyee/ITFAnalytics")
 
 ## COVIS - COVID Visualizations
 
-| Plot Functions | Map Functions    | Table Functions       |
-|----------------|------------------|-----------------------|
-| plot_epicurve  | map_template     | table_10mostcases     |
-|                | map_burden       | table_10mostincidence |
-|                | map_trend        | table_10percentchange |
-|                | map_vaccinations |                       |
+| Plot Functions            | Map Functions    | Table Functions       |
+|---------------------------|------------------|-----------------------|
+| plot_epicurve             | map_template     | table_10mostcases     |
+| plot_epicurve_ind         | map_burden       | table_10mostincidence |
+| plot_epicurve_epidouble   | map_trend        | table_10percentchange |
+| plot_epicurve_dailydouble | map_vaccinations | table_10vaccinations  |
+| plot_riskmatrix           |                  |                       |
+| plot_vaxcoverage          |                  |                       |

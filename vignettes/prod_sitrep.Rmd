@@ -270,7 +270,7 @@ df %>%
   filter(id != "CHN" | source != "WHO") %>%
   group_by(country, source) %>%
   arrange(desc(date)) %>%
-  fill(total_vaccinations, .direction = "downup") %>%
+  fill(total_vaccinations, .direction = "updown") %>%
   fill(people_vaccinated_per_hundred, .direction = "updown") %>%
   ungroup() %>%
   filter(date == max(date)) %>%
